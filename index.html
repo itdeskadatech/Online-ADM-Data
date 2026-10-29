@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admissions Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#0f2447;--blue:#1d5fd1;--bg:#f4f6fa;--card:#fff;--ink:#16202f;--mute:#5d6b82;--line:#e1e6ef;--ok:#157347;--bad:#b42318}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+.hide{display:none!important}
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.box{background:var(--card);padding:32px;border-radius:12px;box-shadow:0 2px 12px #0f244714;max-width:380px;width:100%}
+#app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+nav{background:var(--navy);color:#fff;padding:20px 12px;display:flex;flex-direction:column;gap:4px}
+nav h2{font-size:16px;margin:0 8px 16px}nav .who{margin:auto 8px 0;font-size:13px;opacity:.8}
+nav button{background:none;border:0;color:#cfd8ea;text-align:left;padding:10px 12px;border-radius:8px;cursor:pointer}
+nav button.on,nav button:hover{background:#1d3a6e;color:#fff}
+main{padding:24px;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+h1{font-size:22px;margin:0}
+.btn{background:var(--blue);color:#fff;border:0;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn:disabled{opacity:.6;cursor:wait}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+select,input,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:0}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px #0f24470f}
+.card small{color:var(--mute);display:block}.card b{font-size:20px}
+.panel{background:var(--card);border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px #0f24470f;overflow-x:auto}
+.panel h3{margin:0 0 10px;font-size:16px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.mgrid .card{cursor:pointer;border:1px solid transparent}.mgrid .card:hover{border-color:var(--blue)}
+.mgrid p{margin:2px 0;font-size:13px;color:var(--mute)}.mgrid h4{margin:0 0 6px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mute);font-weight:500}
+td.n,th.n{text-align:right}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.empty{color:var(--mute);padding:20px;text-align:center}
+.skel{height:70px;border-radius:10px;background:linear-gradient(90deg,#e8ecf3,#f4f6fa,#e8ecf3);background-size:200% 100%;animation:s 1.2s infinite}
+@keyframes s{to{background-position:-200% 0}}
+dialog{border:0;border-radius:12px;padding:0;width:min(760px,96vw);max-height:92vh}dialog::backdrop{background:#0f244788}
+dialog form{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
+.fg .full{grid-column:1/-1}.req::after{content:" *";color:var(--bad)}
+.err{color:var(--bad);margin:10px 0 0}.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:8px;z-index:9}
+@media(max-width:800px){#app{grid-template-columns:1fr}nav{flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}nav h2{margin:0 8px 0 0}nav .who{display:none}.two,.fg{grid-template-columns:1fr}main{padding:14px}}
+@media(prefers-reduced-motion:reduce){.skel{animation:none}}
+</style>
+</head>
+<body>
+<section id="login"><div class="box">
+  <h1>Admissions Dashboard</h1>
+  <p style="color:var(--mute)">Sign in with the user ID and password your admin gave you.</p>
+  <form id="lf" style="display:grid;gap:10px"><input id="l_u" placeholder="User ID" autocomplete="username" required><input id="l_p" type="password" placeholder="Password" autocomplete="current-password" required><button class="btn" id="lb">Sign in</button></form>
+  <p id="lerr" class="err"></p>
+</div></section>
+
+<div id="app" class="hide">
+  <nav>
+    <h2>Admissions</h2>
+    <button data-v="overview" class="on">Overview</button>
+    <button data-v="records">Admission records</button>
+    <button data-v="users" id="nu" class="hide">User management</button>
+    <button id="npw">Change password</button>
+    <div class="who"><span id="who"></span><br><a href="#" id="out" style="color:#cfd8ea">Sign out</a></div>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<dialog id="dlg"><form id="frm" novalidate>
+  <h1 style="margin-bottom:14px">Add admission</h1>
+  <div class="fg" id="fields"></div>
+  <p class="err" id="ferr"></p>
+  <div class="acts"><button type="button" class="btn alt" id="clr">Clear</button><button type="button" class="btn alt" id="cancel">Cancel</button><button class="btn" id="sub">Save admission</button></div>
+</form></dialog>
+<dialog id="pdlg"><form id="pfrm" novalidate>
+  <h1 style="margin-bottom:6px">Change password</h1><p id="pnote" style="color:var(--mute);margin:0 0 14px"></p>
+  <div class="fg"><label class="full"><span class="req">Current password</span><input id="p_cur" type="password" autocomplete="current-password"></label>
+  <label><span class="req">New password</span><input id="p_new" type="password" autocomplete="new-password"></label>
+  <label><span class="req">Confirm new password</span><input id="p_new2" type="password" autocomplete="new-password"></label></div>
+  <p class="err" id="perr"></p>
+  <div class="acts"><button type="button" class="btn alt" id="pcancel">Cancel</button><button class="btn" id="psub">Save password</button></div>
+</form></dialog>
+<dialog id="udlg"><form id="ufrm" novalidate>
+  <h1 style="margin-bottom:6px" id="utitle">Add user</h1>
+  <p style="color:var(--mute);margin:0 0 14px">Give the user this ID and password. They must set their own password at first sign-in.</p>
+  <div class="fg">
+    <label><span class="req">Full name</span><input id="u_name"></label>
+    <label><span class="req">User ID</span><input id="u_user" autocomplete="off" placeholder="e.g. riya.s"></label>
+    <label><span id="u_pl" class="req">Password</span><input id="u_pass" autocomplete="off"></label>
+    <label><span class="req">Role</span><select id="u_role"><option value="counsellor">Counsellor</option><option value="tl">Team Leader</option><option value="manager">Manager</option><option value="admin">Admin</option></select></label>
+    <label id="u_mw"><span>Manager</span><select id="u_manager"></select></label>
+    <label id="u_tw"><span>Team Leader</span><select id="u_tl"></select></label>
+    <label><span>Status</span><select id="u_active"><option value="true">Active</option><option value="false">Deactivated</option></select></label>
+  </div>
+  <p class="err" id="uerr"></p>
+  <div class="acts"><button type="button" class="btn alt" id="ucancel">Cancel</button><button class="btn" id="usub">Save user</button></div>
+</form></dialog>
+<div id="toast" class="hide" role="status"></div>
+
+<script>
+/* ===== BACKEND URL (Apps Script web app) ===== */
+const CFG = { API: 'https://script.google.com/macros/s/AKfycbwo_QzcQ_Z7g3eUf-_-bBnSWQ-Q7tBl5YhTTOJ7ARDXNlHGfyrrrGcGkwBJqJZZ6KLU/exec' };
+/* ====================================== */
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ROLE = { admin: 'Admin', manager: 'Manager', tl: 'Team Leader', counsellor: 'Counsellor' };
+let token = null, me = null, opts = {}, counsellors = [], view = 'overview', chart = null, idem = null, rp = 1;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const inr = n => n == null ? '—' : '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
+const pct = n => n == null ? 'Target not configured' : n.toFixed(1) + '%';
+const key = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+
+async function api(action, params = {}) {
+  let j;
+  try {
+    const r = await fetch(CFG.API, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token, action, params }) });
+    j = await r.json();
+  } catch (e) { throw new Error('Cannot reach the server. Check your connection and try again.'); }
+  if (!j.ok) { if (/Session expired|Sign in/.test(j.error)) signOut(j.error); throw new Error(j.error); }
+  return j.data;
+}
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.remove('hide'); setTimeout(() => e.classList.add('hide'), 3500); }
+
+/* ---- auth ---- */
+try { token = sessionStorage.getItem('tk'); } catch (e) {}
+window.addEventListener('load', () => { if (token) boot(); });
+$('#lf').onsubmit = async e => {
+  e.preventDefault(); const b = $('#lb'); b.disabled = true; b.textContent = 'Signing in…'; $('#lerr').textContent = '';
+  try {
+    const r = await api('login', { username: $('#l_u').value, password: $('#l_p').value });
+    token = r.token; try { sessionStorage.setItem('tk', token); } catch (x) {}
+    $('#l_p').value = ''; await boot();
+  } catch (err) { $('#lerr').textContent = err.message; }
+  finally { b.disabled = false; b.textContent = 'Sign in'; }
+};
+async function boot() {
+  try {
+    const b = await api('bootstrap');
+    me = b.user; opts = b.opts; counsellors = b.counsellors;
+    $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+    $('#nu').classList.toggle('hide', me.role !== 'admin');
+    $('#who').textContent = me.name + ' · ' + ROLE[me.role];
+    me.mustChange ? openPw(true) : go('overview');
+  } catch (e) { $('#lerr').textContent = e.message; }
+}
+function signOut(msg) {
+  token = null; me = null; try { sessionStorage.removeItem('tk'); } catch (e) {}
+  $('#app').classList.add('hide'); $('#login').classList.remove('hide'); $('#lerr').textContent = msg || '';
+}
+$('#out').onclick = e => { e.preventDefault(); signOut(); };
+document.querySelectorAll('nav [data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
+
+function go(v) {
+  view = v;
+  if (v === 'users') return usersView();
+  document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  const canAdd = me.role === 'counsellor' || me.role === 'admin';
+  const yr = new Date().getFullYear();
+  const yopts = [yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('');
+  const mopts = '<option value="">All months</option>' + MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
+  $('#main').innerHTML = `<div class="top"><h1>${v === 'overview' ? ROLE[me.role] + ' overview' : 'Admission records'}</h1>
+    ${canAdd ? '<button class="btn" id="add">+ Add admission</button>' : ''}</div>
+    <div class="bar"><select id="yr">${yopts}</select><select id="mo">${mopts}</select>
+    ${v === 'records' ? `<input id="q" placeholder="Search application no., name, phone"><select id="st"><option value="">All statuses</option>${(opts.status || []).map(s => `<option>${esc(s)}</option>`).join('')}</select>` : ''}
+    <button class="btn alt" id="rf">Refresh</button></div><div id="body"></div>`;
+  if (canAdd) $('#add').onclick = openForm;
+  ['yr', 'mo', 'st'].forEach(i => $('#' + i) && ($('#' + i).onchange = () => { rp = 1; load(); }));
+  $('#rf').onclick = load;
+  if ($('#q')) { let t; $('#q').oninput = () => { clearTimeout(t); t = setTimeout(() => { rp = 1; load(); }, 350); }; }
+  load();
+}
+async function load() {
+  $('#body').innerHTML = '<div class="grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>';
+  try { view === 'overview' ? await overview() : await records(); }
+  catch (e) { $('#body').innerHTML = `<div class="panel err">${esc(e.message)}</div>`; }
+}
+
+/* ---- overview ---- */
+async function overview() {
+  const y = +$('#yr').value, m = $('#mo').value;
+  const d = await api('dashboard', { year: y, month: m ? +m : null }), k = d.kpi;
+  const cards = [['Total admissions', k.total], ['Completed', k.completed], ['Cancelled', k.cancelled], ['Pending', k.pending],
+    ['Eligible revenue', inr(k.revenue)], ['Target', k.target == null ? 'Target not configured' : inr(k.target)], ['Achievement', pct(k.ach)],
+    ['Remaining target', inr(k.remaining)], ['Avg revenue / admission', inr(k.avg)]];
+  if (me.role !== 'counsellor') cards.push(['Active counsellors in scope', k.agents]);
+  if (d.canInc) cards.push([me.role === 'counsellor' ? 'My estimated incentive' : 'Estimated incentive', inr(k.incentive)]);
+  if (d.managerIncentive) cards.push(['My team incentive', d.managerIncentive.configured ? inr(d.managerIncentive.amount) : 'Manager incentive policy not configured.']);
+  const mc = d.months.filter(x => x.completed + x.cancelled + x.pending > 0 || x.target != null);
+  let h = `<div class="grid">${cards.map(c => `<div class="card"><small>${c[0]}</small><b>${c[1]}</b></div>`).join('')}</div>
+    <div class="panel"><h3>Revenue vs target, ${y}</h3><div style="height:260px"><canvas id="ch"></canvas></div></div>
+    <div class="panel"><h3>Monthly performance</h3>${mc.length ? `<div class="mgrid">${mc.map(x => `<div class="card" data-m="${x.month}"><h4>${MN[x.month - 1]} ${y}</h4>
+      <p>Completed ${x.completed} · Cancelled ${x.cancelled} · Pending ${x.pending}</p><p>Revenue ${inr(x.revenue)}</p><p>Target ${x.target == null ? 'not configured' : inr(x.target)}</p>
+      <p>Achievement ${pct(x.target ? x.revenue / x.target * 100 : null)}</p>${d.canInc ? `<p>Est. incentive ${inr(x.incentive)}</p>` : ''}</div>`).join('')}</div>`
+      : '<div class="empty">No admissions or targets for this year yet. Add an admission to get started.</div>'}</div>`;
+  if (d.agents.length) h += `<div class="panel"><h3>Counsellor performance</h3><table><tr><th>Counsellor</th><th class="n">Completed</th><th class="n">Cancelled</th><th class="n">Revenue</th><th class="n">Target</th><th class="n">Achievement</th>${d.canInc ? '<th class="n">Rate</th><th class="n">Est. incentive</th>' : ''}</tr>
+    ${d.agents.map(a => `<tr><td>${esc(a.name)}</td><td class="n">${a.completed}</td><td class="n">${a.cancelled}</td><td class="n">${inr(a.revenue)}</td><td class="n">${a.target == null ? '—' : inr(a.target)}</td><td class="n">${a.ach == null ? '—' : a.ach.toFixed(1) + '%'}</td>${d.canInc ? `<td class="n">${a.rate == null ? '—' : a.rate + '%'}</td><td class="n">${inr(a.incentive)}</td>` : ''}</tr>`).join('')}</table></div>`;
+  const tbl = (t, rows) => `<div class="panel"><h3>${t}</h3>${rows.length ? `<table><tr><th>Name</th><th class="n">Admissions</th><th class="n">Revenue</th></tr>${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.count}</td><td class="n">${inr(r.revenue)}</td></tr>`).join('')}</table>` : '<div class="empty">No completed admissions in this period.</div>'}</div>`;
+  h += `<div class="two">${tbl('By lead source', d.sources)}${tbl('By university', d.universities)}</div>`;
+  $('#body').innerHTML = h;
+  document.querySelectorAll('[data-m]').forEach(c => c.onclick = () => { $('#mo').value = c.dataset.m; load(); });
+  if (chart) chart.destroy();
+  chart = new Chart($('#ch'), { data: { labels: MN, datasets: [
+    { type: 'bar', label: 'Revenue', data: d.months.map(x => x.revenue), backgroundColor: '#1d5fd1' },
+    { type: 'line', label: 'Target', data: d.months.map(x => x.target), borderColor: '#e08a00', spanGaps: false }] },
+    options: { maintainAspectRatio: false, scales: { y: { ticks: { callback: v => inr(v) } } }, plugins: { tooltip: { callbacks: { label: c => c.dataset.label + ': ' + inr(c.parsed.y) } } } } });
+}
+
+/* ---- records ---- */
+async function records() {
+  const d = await api('records', { year: +$('#yr').value, month: $('#mo').value || null, q: $('#q').value, status: $('#st').value, page: rp });
+  if (!d.rows.length) { $('#body').innerHTML = '<div class="panel empty">No admission records match these filters.</div>'; return; }
+  const st = r => me.role === 'admin' ? `<select data-id="${esc(r.record_id)}">${opts.status.map(s => `<option${s === r.status ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select>` : esc(r.status);
+  $('#body').innerHTML = `<div class="panel"><table><tr><th>Date</th><th>Application no.</th><th>Candidate</th><th>Course</th><th>University</th><th>Counsellor</th><th>Status</th><th class="n">Revenue</th></tr>
+    ${d.rows.map(r => `<tr><td>${esc(r.done_date)}</td><td>${esc(r.app_no)}</td><td>${esc(r.candidate)}</td><td>${esc(r.course)}</td><td>${esc(r.university)}</td><td>${esc(r.counsellor)}</td><td>${st(r)}</td><td class="n">${inr(r.revenue)}</td></tr>`).join('')}</table>
+    <div class="acts" style="align-items:center"><span style="margin-right:auto;color:var(--mute)">${d.total} records · page ${d.page} of ${d.pages}</span>
+    <button class="btn alt" id="pv" ${d.page <= 1 ? 'disabled' : ''}>Previous</button><button class="btn alt" id="nx" ${d.page >= d.pages ? 'disabled' : ''}>Next</button></div></div>`;
+  $('#pv').onclick = () => { rp--; load(); }; $('#nx').onclick = () => { rp++; load(); };
+  document.querySelectorAll('select[data-id]').forEach(s => s.onchange = async () => {
+    try { await api('update_status', { record_id: s.dataset.id, status: s.value }); toast('Status updated'); } catch (e) { toast(e.message); load(); }
+  });
+}
+
+/* ---- admission form ---- */
+const FIELDS = [['process', 'Process', 'select'], ['done_date', 'Admission done date', 'date'], ['app_no', 'Application number', 'text'], ['candidate', 'Candidate name', 'text'],
+  ['phone', 'Contact number', 'tel'], ['campus', 'Campus', 'select'], ['course', 'Course selected', 'select'], ['status', 'Admission status', 'select'],
+  ['source', 'Lead source', 'select'], ['university', 'University name', 'select'], ['revenue', 'Revenue amount (₹)', 'number'], ['pay_status', 'Payment status', 'select'],
+  ['pay_ref', 'Payment reference', 'text', true], ['remarks', 'Remarks', 'textarea', true]];
+function openForm() {
+  idem = idem || key();
+  const fs = FIELDS.map(([k, l, t, optional]) => {
+    const r = optional ? '' : ' req', a = `id="f_${k}" name="${k}"`;
+    const inp = t === 'select' ? `<select ${a}><option value="">Select</option>${(opts[k] || []).map(o => `<option>${esc(o)}</option>`).join('')}</select>`
+      : t === 'textarea' ? `<textarea ${a} rows="2" maxlength="500"></textarea>` : `<input ${a} type="${t}"${t === 'number' ? ' min="0" step="0.01"' : ''}>`;
+    return `<label class="${t === 'textarea' ? 'full' : ''}"><span class="${r}">${l}</span>${inp}</label>`;
+  });
+  if (me.role === 'admin') fs.unshift(`<label class="full"><span class="req">Counsellor</span><select id="f_counsellor_id"><option value="">Select</option>${counsellors.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>`);
+  $('#fields').innerHTML = fs.join(''); $('#ferr').textContent = '';
+  $('#f_done_date').max = new Date().toISOString().slice(0, 10);
+  $('#dlg').showModal();
+}
+$('#cancel').onclick = () => $('#dlg').close();
+$('#clr').onclick = () => { $('#frm').reset(); $('#ferr').textContent = ''; };
+$('#frm').onsubmit = async e => {
+  e.preventDefault();
+  const p = { idem_key: idem }; document.querySelectorAll('#fields [id^=f_]').forEach(el => p[el.id.slice(2)] = el.value);
+  const missing = FIELDS.filter(f => !f[3] && !p[f[0]]).map(f => f[1]);
+  if (me.role === 'admin' && !p.counsellor_id) missing.unshift('Counsellor');
+  if (missing.length) { $('#ferr').textContent = 'Required: ' + missing.join(', '); return; }
+  const b = $('#sub'); b.disabled = true; b.textContent = 'Saving…'; $('#ferr').textContent = '';
+  try {
+    const r = await api('submit', p);
+    idem = null; $('#dlg').close(); toast(r.duplicate ? 'Already saved (' + r.record_id + ')' : 'Admission saved (' + r.record_id + ')'); load();
+  } catch (err) { $('#ferr').textContent = err.message; }   // idem key kept so a retry cannot double-save
+  finally { b.disabled = false; b.textContent = 'Save admission'; }
+};
+
+/* ---- user management (admin) ---- */
+let ulist = [], editId = '';
+async function usersView() {
+  document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === 'users'));
+  $('#main').innerHTML = '<div class="top"><h1>User management</h1><button class="btn" id="uadd">+ Add user</button></div><div id="body"><div class="skel"></div></div>';
+  $('#uadd').onclick = () => openUser(null);
+  try {
+    ulist = await api('users');
+    const nm = id => (ulist.find(x => x.user_id === id) || {}).name || '—';
+    $('#body').innerHTML = `<div class="panel"><table><tr><th>ID</th><th>Name</th><th>User ID</th><th>Role</th><th>Manager</th><th>Team leader</th><th>Status</th><th></th></tr>
+      ${ulist.map(x => `<tr><td>${esc(x.user_id)}</td><td>${esc(x.name)}</td><td>${esc(x.username)}</td><td>${ROLE[x.role] || esc(x.role)}</td><td>${x.manager_id ? esc(nm(x.manager_id)) : '—'}</td><td>${x.tl_id ? esc(nm(x.tl_id)) : '—'}</td>
+      <td>${x.active ? 'Active' : 'Deactivated'}</td><td><button class="btn alt" data-e="${esc(x.user_id)}">Edit</button></td></tr>`).join('')}</table></div>`;
+    document.querySelectorAll('[data-e]').forEach(b => b.onclick = () => openUser(ulist.find(x => x.user_id === b.dataset.e)));
+  } catch (e) { $('#body').innerHTML = `<div class="panel err">${esc(e.message)}</div>`; }
+}
+function openUser(x) {
+  editId = x ? x.user_id : '';
+  $('#utitle').textContent = x ? 'Edit user' : 'Add user'; $('#uerr').textContent = '';
+  const pick = (role, sel) => '<option value="">None</option>' + ulist.filter(a => a.role === role && a.active).map(a => `<option value="${esc(a.user_id)}"${a.user_id === sel ? ' selected' : ''}>${esc(a.name)}</option>`).join('');
+  $('#u_manager').innerHTML = pick('manager', x && x.manager_id); $('#u_tl').innerHTML = pick('tl', x && x.tl_id);
+  $('#u_name').value = x ? x.name : ''; $('#u_user').value = x ? x.username : ''; $('#u_pass').value = ''; $('#u_pl').textContent = x ? 'New password (leave blank to keep)' : 'Password'; $('#u_pl').classList.toggle('req', !x); $('#u_role').value = x ? x.role : 'counsellor'; $('#u_active').value = x ? String(x.active) : 'true';
+  $('#u_active').disabled = !x; roleUi(); $('#udlg').showModal();
+}
+function roleUi() { const r = $('#u_role').value; $('#u_mw').classList.toggle('hide', r === 'admin' || r === 'manager'); $('#u_tw').classList.toggle('hide', r !== 'counsellor'); }
+$('#u_role').onchange = roleUi; $('#ucancel').onclick = () => $('#udlg').close();
+$('#ufrm').onsubmit = async e => {
+  e.preventDefault(); const b = $('#usub'); b.disabled = true; b.textContent = 'Saving…'; $('#uerr').textContent = '';
+  try {
+    const r = await api('save_user', { user_id: editId, name: $('#u_name').value, username: $('#u_user').value, password: $('#u_pass').value, role: $('#u_role').value,
+      manager_id: $('#u_manager').value, tl_id: $('#u_tl').value, active: $('#u_active').value === 'true' });
+    $('#udlg').close(); toast((editId ? 'User updated: ' : 'User created: ') + r.user_id); usersView();
+  } catch (err) { $('#uerr').textContent = err.message; }
+  finally { b.disabled = false; b.textContent = 'Save user'; }
+};
+
+/* ---- change password ---- */
+let pwForced = false;
+function openPw(forced) {
+  pwForced = forced; $('#pcancel').classList.toggle('hide', forced);
+  $('#pnote').textContent = forced ? 'Set a new password before you continue.' : 'Use at least 8 characters with a letter and a number.';
+  ['p_cur', 'p_new', 'p_new2'].forEach(i => $('#' + i).value = ''); $('#perr').textContent = ''; $('#pdlg').showModal();
+}
+$('#pdlg').addEventListener('cancel', e => { if (pwForced) e.preventDefault(); });
+$('#npw').onclick = () => openPw(false); $('#pcancel').onclick = () => $('#pdlg').close();
+$('#pfrm').onsubmit = async e => {
+  e.preventDefault();
+  if ($('#p_new').value !== $('#p_new2').value) { $('#perr').textContent = 'New passwords do not match.'; return; }
+  const b = $('#psub'); b.disabled = true; $('#perr').textContent = '';
+  try {
+    const r = await api('change_password', { current: $('#p_cur').value, password: $('#p_new').value });
+    token = r.token; try { sessionStorage.setItem('tk', token); } catch (x) {}
+    const was = pwForced; pwForced = false; $('#pdlg').close(); toast('Password changed'); if (was) go('overview');
+  } catch (err) { $('#perr').textContent = err.message; }
+  finally { b.disabled = false; }
+};
+</script>
+</body>
+</html>
