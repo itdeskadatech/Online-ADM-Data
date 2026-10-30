@@ -68,6 +68,7 @@ nav{background:linear-gradient(180deg,#0f2447,#183a74)}
     <h2>Admissions</h2>
     <button data-v="overview" class="on">Overview</button>
     <button data-v="records">Admission records</button>
+    <button data-v="targets" id="nt" class="hide">Target management</button>
     <button data-v="users" id="nu" class="hide">User management</button>
     <button id="npw">Change password</button>
     <div class="who"><span id="who"></span><br><a href="#" id="out" style="color:#cfd8ea">Sign out</a></div>
@@ -160,7 +161,7 @@ async function boot() {
     const b = await api('bootstrap');
     me = b.user; opts = b.opts; counsellors = b.counsellors;
     $('#login').classList.add('hide'); $('#app').classList.remove('hide');
-    $('#nu').classList.toggle('hide', me.role !== 'admin');
+    $('#nu').classList.toggle('hide', me.role !== 'admin'); $('#nt').classList.toggle('hide', me.role !== 'admin');
     $('#who').textContent = me.name + ' · ' + ROLE[me.role];
     me.mustChange ? openPw(true) : go('overview');
   } catch (e) { $('#lerr').textContent = e.message; }
@@ -175,8 +176,9 @@ document.querySelectorAll('nav [data-v]').forEach(b => b.onclick = () => go(b.da
 function go(v) {
   view = v;
   if (v === 'users') return usersView();
+  if (v === 'targets') return targetsView();
   document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
-  const canAdd = me.role === 'counsellor' || me.role === 'admin';
+  const canAdd = true;   // all roles can add admissions; the server limits which counsellors each role may pick
   const yr = new Date().getFullYear();
   const yopts = [yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('');
   const mopts = '<option value="">All months</option>' + MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
@@ -257,7 +259,7 @@ function openForm() {
     return `<label class="${t === 'textarea' ? 'full' : ''}"><span class="${r}">${l}</span>${inp}</label>`;
   });
   const pub = !me, list = pub ? pubC : counsellors;
-  if (pub || me.role === 'admin') {
+  if (pub || me.role !== 'counsellor') {
     fs.unshift(`<label class="full"><span class="req">Counsellor</span><select id="f_counsellor_id"><option value="">Select</option>${list.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>`);
     if (pub) {
       fs.splice(1, 0, '<label><span>Manager (auto)</span><input id="f_manager_name" readonly></label><label><span>Team Leader (auto)</span><input id="f_tl_name" readonly></label>');
@@ -276,7 +278,7 @@ $('#frm').onsubmit = async e => {
   e.preventDefault();
   const p = { idem_key: idem }; document.querySelectorAll('#fields [id^=f_]').forEach(el => p[el.id.slice(2)] = el.value);
   const missing = FIELDS.filter(f => !f[3] && !p[f[0]]).map(f => f[1]);
-  if ((!me || me.role === 'admin') && !p.counsellor_id) missing.unshift('Counsellor');
+  if ((!me || me.role !== 'counsellor') && !p.counsellor_id) missing.unshift('Counsellor');
   if (missing.length) { $('#ferr').textContent = 'Required: ' + missing.join(', '); return; }
   const b = $('#sub'); b.disabled = true; b.textContent = 'Saving…'; $('#ferr').textContent = '';
   try {
@@ -392,6 +394,72 @@ $('#pyform').onsubmit = async e => {
   } catch (err) { $('#pyerr').textContent = err.message; }   // key kept so a retry cannot double-record
   finally { b.disabled = false; }
 };
+
+/* ---- target management (admin) ---- */
+const mondayOf = d => { const x = new Date(d + 'T00:00:00Z'); x.setUTCDate(x.getUTCDate() - ((x.getUTCDay() + 6) % 7)); return x.toISOString().slice(0, 10); };
+const tg = { type: 'monthly', year: new Date().getFullYear(), month: new Date().getMonth() + 1, week: mondayOf(new Date().toISOString().slice(0, 10)), role: '' };
+let tdata = null;
+function targetsView() {
+  document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === 'targets'));
+  const yr = new Date().getFullYear();
+  $('#main').innerHTML = `<div class="top"><h1>Target management</h1><div><button class="btn alt" id="tcopy">Copy previous period</button> <button class="btn" id="tsave">Save targets</button></div></div>
+    <div class="bar"><select id="t_type"><option value="monthly">Monthly</option><option value="weekly">Weekly (Mon–Sun)</option></select>
+    <select id="t_year">${[yr + 1, yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('')}</select>
+    <select id="t_month">${MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
+    <span id="t_wk" class="bar" style="margin:0"><button class="btn alt" id="t_pw" aria-label="Previous week">‹</button><input type="date" id="t_week"><button class="btn alt" id="t_nw" aria-label="Next week">›</button></span>
+    <select id="t_role"><option value="">All roles</option><option value="counsellor">Counsellors</option><option value="tl">Team Leaders</option><option value="manager">Managers</option></select></div>
+    <p id="tmsg" class="err" role="alert"></p><div id="body"></div>`;
+  $('#t_type').value = tg.type; $('#t_year').value = tg.year; $('#t_month').value = tg.month; $('#t_week').value = tg.week; $('#t_role').value = tg.role;
+  const sync = () => { $('#t_wk').classList.toggle('hide', tg.type !== 'weekly'); $('#t_year').classList.toggle('hide', tg.type !== 'monthly'); $('#t_month').classList.toggle('hide', tg.type !== 'monthly'); };
+  const shift = n => { const d = new Date(tg.week + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); tg.week = d.toISOString().slice(0, 10); $('#t_week').value = tg.week; loadT(); };
+  $('#t_type').onchange = e => { tg.type = e.target.value; sync(); loadT(); };
+  $('#t_year').onchange = e => { tg.year = +e.target.value; loadT(); }; $('#t_month').onchange = e => { tg.month = +e.target.value; loadT(); };
+  $('#t_week').onchange = e => { if (e.target.value) { tg.week = mondayOf(e.target.value); e.target.value = tg.week; loadT(); } };
+  $('#t_pw').onclick = () => shift(-7); $('#t_nw').onclick = () => shift(7);
+  $('#t_role').onchange = e => { tg.role = e.target.value; renderT(); };
+  $('#tsave').onclick = () => saveT('new'); $('#tcopy').onclick = copyT;
+  sync(); loadT();
+}
+async function loadT() {
+  $('#tmsg').textContent = ''; $('#body').innerHTML = '<div class="skel"></div>';
+  try { tdata = await api('targets', { period_type: tg.type, year: tg.year, month: tg.month, week_start: tg.week }); renderT(); }
+  catch (e) { $('#body').innerHTML = `<div class="panel err">${esc(e.message)}</div>`; }
+}
+function renderT() {
+  if (!tdata) return;
+  const up = tdata.period.upcoming, rows = tdata.employees.filter(e => !tg.role || e.role === tg.role);
+  const pc = (a, t) => up || !t ? '—' : (a / t * 100).toFixed(1) + '%';
+  const status = e => !e.has ? 'Target Not Assigned' : up ? 'Upcoming' : (e.revenue_target && e.revenue >= e.revenue_target) ? 'Target Achieved' : 'In progress';
+  $('#body').innerHTML = `<div class="panel"><h3>${tg.type === 'weekly' ? 'Week ' : ''}${esc(tdata.period.label)}</h3>
+    ${rows.length ? `<table><tr><th>Employee</th><th>Role</th><th>Manager</th><th>Team leader</th><th class="n">Revenue target (₹)</th><th class="n">Received</th><th class="n">Rev %</th><th class="n">Admission target</th><th class="n">Admissions</th><th class="n">Adm %</th><th>Status</th></tr>
+    ${rows.map(e => `<tr data-u="${esc(e.user_id)}"><td>${esc(e.name)}</td><td>${ROLE[e.role]}</td><td>${esc(e.manager_name) || '—'}</td><td>${esc(e.tl_name) || '—'}</td>
+    <td class="n"><input data-f="revenue_target" type="number" min="0" step="1" style="width:130px" value="${e.revenue_target ?? ''}"></td><td class="n">${up ? '—' : inr(e.revenue)}</td><td class="n">${pc(e.revenue, e.revenue_target)}</td>
+    <td class="n"><input data-f="admission_target" type="number" min="0" step="1" style="width:90px" value="${e.admission_target ?? ''}"></td><td class="n">${up ? '—' : e.admissions}</td><td class="n">${pc(e.admissions, e.admission_target)}</td><td>${status(e)}</td></tr>`).join('')}</table>`
+    : '<div class="empty">No active employees for this role. Add them in User management.</div>'}</div>`;
+}
+function copyT() {
+  let n = 0;
+  document.querySelectorAll('tr[data-u]').forEach(tr => {
+    const e = tdata.employees.find(x => x.user_id === tr.dataset.u);
+    if (e && e.prev) { tr.querySelector('[data-f=revenue_target]').value = e.prev.revenue_target ?? ''; tr.querySelector('[data-f=admission_target]').value = e.prev.admission_target ?? ''; n++; }
+  });
+  toast(n ? 'Copied ' + n + ' targets from the previous period. Review, then click Save targets.' : 'No targets found in the previous period.');
+}
+async function saveT(mode, reason) {
+  const rows = [...document.querySelectorAll('tr[data-u]')].map(tr => ({ user_id: tr.dataset.u, revenue_target: tr.querySelector('[data-f=revenue_target]').value, admission_target: tr.querySelector('[data-f=admission_target]').value }));
+  const b = $('#tsave'); b.disabled = true; $('#tmsg').textContent = '';
+  try {
+    const r = await api('save_targets', { period_type: tg.type, year: tg.year, month: tg.month, week_start: tg.week, rows, mode, reason });
+    if (r.errors) { $('#tmsg').textContent = 'Nothing was saved. Fix: ' + r.errors.map(x => x.name + ' – ' + x.error).join('; '); return; }
+    if (r.conflicts) {
+      if (!confirm(r.conflicts.join(', ') + ' already ha' + (r.conflicts.length > 1 ? 've' : 's') + ' a different target for this period. Revise? The old values stay in the change history.')) return;
+      const why = prompt('Reason for this revision (required):'); if (!why) return;
+      b.disabled = false; return saveT('revise', why);
+    }
+    toast(r.saved + ' target(s) saved'); loadT();
+  } catch (e) { $('#tmsg').textContent = e.message; }
+  finally { b.disabled = false; }
+}
 </script>
 </body>
 </html>
