@@ -48,11 +48,16 @@ dialog form{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
 #toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:8px;z-index:9}
 @media(max-width:800px){#app{grid-template-columns:1fr}nav{flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}nav h2{margin:0 8px 0 0}nav .who{display:none}.two,.fg{grid-template-columns:1fr}main{padding:14px}}
 @media(prefers-reduced-motion:reduce){.skel{animation:none}}
+#login{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;background:linear-gradient(135deg,#eaf0fb,#f7f9fd)}
+nav{background:linear-gradient(180deg,#0f2447,#183a74)}
+.card{border-top:3px solid #1d5fd1}.grid .card b{background:linear-gradient(90deg,#0f2447,#1d5fd1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bar2{height:6px;background:#e6ecf7;border-radius:4px;margin-top:6px}.bar2 i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#1d5fd1,#3da5ff)}
+.mgrid .card{border-top-color:#3da5ff;transition:transform .15s}.mgrid .card:hover{transform:translateY(-2px)}
 </style>
 </head>
 <body>
-<section id="login"><div class="box">
-  <h1>Admissions Dashboard</h1>
+<section id="login"><div class="box"><h1>Online Admission Entry</h1><p style="color:var(--mute)">Submit a new admission. No login needed.</p><button class="btn" id="pubbtn">Submit an admission</button></div><div class="box">
+  <h1>Staff login</h1>
   <p style="color:var(--mute)">Sign in with the user ID and password your admin gave you.</p>
   <form id="lf" style="display:grid;gap:10px"><input id="l_u" placeholder="User ID" autocomplete="username" required><input id="l_p" type="password" placeholder="Password" autocomplete="current-password" required><button class="btn" id="lb">Sign in</button></form>
   <p id="lerr" class="err"></p>
@@ -76,6 +81,19 @@ dialog form{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
   <p class="err" id="ferr"></p>
   <div class="acts"><button type="button" class="btn alt" id="clr">Clear</button><button type="button" class="btn alt" id="cancel">Cancel</button><button class="btn" id="sub">Save admission</button></div>
 </form></dialog>
+<dialog id="pydlg"><div style="padding:20px"><h1 id="pytitle"></h1><p id="pysum" style="color:var(--mute)"></p>
+  <div style="overflow-x:auto"><table><tr><th>Received on</th><th>Type</th><th class="n">Amount</th><th>Method</th><th>Reference</th><th>Status</th><th></th></tr><tbody id="pyrows"></tbody></table></div>
+  <form id="pyform" class="fg" style="margin-top:14px" novalidate>
+    <label><span class="req">Amount (₹)</span><input id="py_amount" type="number" min="0" step="0.01"></label>
+    <label><span class="req">Actual received date</span><input id="py_date" type="date"></label>
+    <label><span>Type</span><select id="py_kind"><option value="payment">Payment</option><option value="refund">Refund</option></select></label>
+    <label><span>Status</span><select id="py_status"><option>Received</option><option>Pending</option><option>Failed</option></select></label>
+    <label><span>Method</span><select id="py_method"><option>UPI</option><option>Bank Transfer</option><option>Cash</option><option>Card</option><option>Cheque</option><option>Online</option></select></label>
+    <label><span>Transaction reference</span><input id="py_ref"></label>
+    <label><span>Next expected payment</span><input id="py_next" type="date"></label>
+    <label><span>Remarks</span><input id="py_rem" maxlength="300"></label>
+    <div class="full acts" style="grid-column:1/-1"><button class="btn" id="pysub">Record</button></div>
+  </form><p class="err" id="pyerr"></p><div class="acts"><button class="btn alt" id="pyclose">Close</button></div></div></dialog>
 <dialog id="pdlg"><form id="pfrm" novalidate>
   <h1 style="margin-bottom:6px">Change password</h1><p id="pnote" style="color:var(--mute);margin:0 0 14px"></p>
   <div class="fg"><label class="full"><span class="req">Current password</span><input id="p_cur" type="password" autocomplete="current-password"></label>
@@ -107,7 +125,7 @@ const CFG = { API: 'https://script.google.com/macros/s/AKfycbwo_QzcQ_Z7g3eUf-_-b
 /* ====================================== */
 const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ROLE = { admin: 'Admin', manager: 'Manager', tl: 'Team Leader', counsellor: 'Counsellor' };
-let token = null, me = null, opts = {}, counsellors = [], view = 'overview', chart = null, idem = null, rp = 1;
+let pubC = [], codeReq = false, token = null, me = null, opts = {}, counsellors = [], view = 'overview', chart = null, idem = null, rp = 1;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inr = n => n == null ? '—' : '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
@@ -185,7 +203,7 @@ async function overview() {
   const d = await api('dashboard', { year: y, month: m ? +m : null }), k = d.kpi;
   const cards = [['Total admissions', k.total], ['Completed', k.completed], ['Cancelled', k.cancelled], ['Pending', k.pending],
     ['Eligible revenue', inr(k.revenue)], ['Target', k.target == null ? 'Target not configured' : inr(k.target)], ['Achievement', pct(k.ach)],
-    ['Remaining target', inr(k.remaining)], ['Avg revenue / admission', inr(k.avg)]];
+    ['Remaining target', inr(k.remaining)], ['Outstanding balance', inr(k.outstanding)], ['Avg revenue / admission', inr(k.avg)]];
   if (me.role !== 'counsellor') cards.push(['Active counsellors in scope', k.agents]);
   if (d.canInc) cards.push([me.role === 'counsellor' ? 'My estimated incentive' : 'Estimated incentive', inr(k.incentive)]);
   if (d.managerIncentive) cards.push(['My team incentive', d.managerIncentive.configured ? inr(d.managerIncentive.amount) : 'Manager incentive policy not configured.']);
@@ -193,12 +211,12 @@ async function overview() {
   let h = `<div class="grid">${cards.map(c => `<div class="card"><small>${c[0]}</small><b>${c[1]}</b></div>`).join('')}</div>
     <div class="panel"><h3>Revenue vs target, ${y}</h3><div style="height:260px"><canvas id="ch"></canvas></div></div>
     <div class="panel"><h3>Monthly performance</h3>${mc.length ? `<div class="mgrid">${mc.map(x => `<div class="card" data-m="${x.month}"><h4>${MN[x.month - 1]} ${y}</h4>
-      <p>Completed ${x.completed} · Cancelled ${x.cancelled} · Pending ${x.pending}</p><p>Revenue ${inr(x.revenue)}</p><p>Target ${x.target == null ? 'not configured' : inr(x.target)}</p>
-      <p>Achievement ${pct(x.target ? x.revenue / x.target * 100 : null)}</p>${d.canInc ? `<p>Est. incentive ${inr(x.incentive)}</p>` : ''}</div>`).join('')}</div>`
+      <p>Completed ${x.completed} · Cancelled ${x.cancelled} · Pending ${x.pending}</p><p>Received ${inr(x.revenue)}</p><p>Target ${x.target == null ? 'not configured' : inr(x.target)}</p>
+      <p>Achievement ${pct(x.target ? x.revenue / x.target * 100 : null)}</p>${x.target ? `<div class="bar2"><i style="width:${Math.min(100, x.revenue / x.target * 100)}%"></i></div>` : ''}${d.canInc ? `<p>Est. incentive ${inr(x.incentive)}</p>` : ''}</div>`).join('')}</div>`
       : '<div class="empty">No admissions or targets for this year yet. Add an admission to get started.</div>'}</div>`;
   if (d.agents.length) h += `<div class="panel"><h3>Counsellor performance</h3><table><tr><th>Counsellor</th><th class="n">Completed</th><th class="n">Cancelled</th><th class="n">Revenue</th><th class="n">Target</th><th class="n">Achievement</th>${d.canInc ? '<th class="n">Rate</th><th class="n">Est. incentive</th>' : ''}</tr>
     ${d.agents.map(a => `<tr><td>${esc(a.name)}</td><td class="n">${a.completed}</td><td class="n">${a.cancelled}</td><td class="n">${inr(a.revenue)}</td><td class="n">${a.target == null ? '—' : inr(a.target)}</td><td class="n">${a.ach == null ? '—' : a.ach.toFixed(1) + '%'}</td>${d.canInc ? `<td class="n">${a.rate == null ? '—' : a.rate + '%'}</td><td class="n">${inr(a.incentive)}</td>` : ''}</tr>`).join('')}</table></div>`;
-  const tbl = (t, rows) => `<div class="panel"><h3>${t}</h3>${rows.length ? `<table><tr><th>Name</th><th class="n">Admissions</th><th class="n">Revenue</th></tr>${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.count}</td><td class="n">${inr(r.revenue)}</td></tr>`).join('')}</table>` : '<div class="empty">No completed admissions in this period.</div>'}</div>`;
+  const tbl = (t, rows) => `<div class="panel"><h3>${t}</h3>${rows.length ? `<table><tr><th>Name</th><th class="n">Admissions</th><th class="n">Admission value</th></tr>${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.count}</td><td class="n">${inr(r.revenue)}</td></tr>`).join('')}</table>` : '<div class="empty">No completed admissions in this period.</div>'}</div>`;
   h += `<div class="two">${tbl('By lead source', d.sources)}${tbl('By university', d.universities)}</div>`;
   $('#body').innerHTML = h;
   document.querySelectorAll('[data-m]').forEach(c => c.onclick = () => { $('#mo').value = c.dataset.m; load(); });
@@ -214,11 +232,12 @@ async function records() {
   const d = await api('records', { year: +$('#yr').value, month: $('#mo').value || null, q: $('#q').value, status: $('#st').value, page: rp });
   if (!d.rows.length) { $('#body').innerHTML = '<div class="panel empty">No admission records match these filters.</div>'; return; }
   const st = r => me.role === 'admin' ? `<select data-id="${esc(r.record_id)}">${opts.status.map(s => `<option${s === r.status ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select>` : esc(r.status);
-  $('#body').innerHTML = `<div class="panel"><table><tr><th>Date</th><th>Application no.</th><th>Candidate</th><th>Course</th><th>University</th><th>Counsellor</th><th>Status</th><th class="n">Revenue</th></tr>
-    ${d.rows.map(r => `<tr><td>${esc(r.done_date)}</td><td>${esc(r.app_no)}</td><td>${esc(r.candidate)}</td><td>${esc(r.course)}</td><td>${esc(r.university)}</td><td>${esc(r.counsellor)}</td><td>${st(r)}</td><td class="n">${inr(r.revenue)}</td></tr>`).join('')}</table>
+  $('#body').innerHTML = `<div class="panel"><table><tr><th>Date</th><th>Application no.</th><th>Candidate</th><th>Course</th><th>University</th><th>Counsellor</th><th>Status</th><th class="n">Value</th><th class="n">Received</th><th class="n">Balance</th><th></th></tr>
+    ${d.rows.map(r => `<tr><td>${esc(r.done_date)}</td><td>${esc(r.app_no)}</td><td>${esc(r.candidate)}</td><td>${esc(r.course)}</td><td>${esc(r.university)}</td><td>${esc(r.counsellor)}</td><td>${st(r)}</td><td class="n">${inr(r.revenue)}</td><td class="n">${inr(r.received)}</td><td class="n">${inr(r.balance)}</td><td><button class="btn alt" data-p="${esc(r.record_id)}">Payments</button></td></tr>`).join('')}</table>
     <div class="acts" style="align-items:center"><span style="margin-right:auto;color:var(--mute)">${d.total} records · page ${d.page} of ${d.pages}</span>
     <button class="btn alt" id="pv" ${d.page <= 1 ? 'disabled' : ''}>Previous</button><button class="btn alt" id="nx" ${d.page >= d.pages ? 'disabled' : ''}>Next</button></div></div>`;
   $('#pv').onclick = () => { rp--; load(); }; $('#nx').onclick = () => { rp++; load(); };
+  document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => openPay(b.dataset.p));
   document.querySelectorAll('select[data-id]').forEach(s => s.onchange = async () => {
     try { await api('update_status', { record_id: s.dataset.id, status: s.value }); toast('Status updated'); } catch (e) { toast(e.message); load(); }
   });
@@ -227,7 +246,7 @@ async function records() {
 /* ---- admission form ---- */
 const FIELDS = [['process', 'Process', 'select'], ['done_date', 'Admission done date', 'date'], ['app_no', 'Application number', 'text'], ['candidate', 'Candidate name', 'text'],
   ['phone', 'Contact number', 'tel'], ['campus', 'Campus', 'select'], ['course', 'Course selected', 'select'], ['status', 'Admission status', 'select'],
-  ['source', 'Lead source', 'select'], ['university', 'University name', 'select'], ['revenue', 'Revenue amount (₹)', 'number'], ['pay_status', 'Payment status', 'select'],
+  ['source', 'Lead source', 'select'], ['university', 'University name', 'select'], ['revenue', 'Total admission value (₹)', 'number'], ['pay_status', 'Payment status', 'select'],
   ['pay_ref', 'Payment reference', 'text', true], ['remarks', 'Remarks', 'textarea', true]];
 function openForm() {
   idem = idem || key();
@@ -237,9 +256,18 @@ function openForm() {
       : t === 'textarea' ? `<textarea ${a} rows="2" maxlength="500"></textarea>` : `<input ${a} type="${t}"${t === 'number' ? ' min="0" step="0.01"' : ''}>`;
     return `<label class="${t === 'textarea' ? 'full' : ''}"><span class="${r}">${l}</span>${inp}</label>`;
   });
-  if (me.role === 'admin') fs.unshift(`<label class="full"><span class="req">Counsellor</span><select id="f_counsellor_id"><option value="">Select</option>${counsellors.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>`);
+  const pub = !me, list = pub ? pubC : counsellors;
+  if (pub || me.role === 'admin') {
+    fs.unshift(`<label class="full"><span class="req">Counsellor</span><select id="f_counsellor_id"><option value="">Select</option>${list.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>`);
+    if (pub) {
+      fs.splice(1, 0, '<label><span>Manager (auto)</span><input id="f_manager_name" readonly></label><label><span>Team Leader (auto)</span><input id="f_tl_name" readonly></label>');
+      fs.push('<input id="f_website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">');
+      if (codeReq) fs.push('<label class="full"><span class="req">Entry code</span><input id="f_code"></label>');
+    }
+  }
   $('#fields').innerHTML = fs.join(''); $('#ferr').textContent = '';
   $('#f_done_date').max = new Date().toISOString().slice(0, 10);
+  if (pub) $('#f_counsellor_id').onchange = e => { const c = pubC.find(x => x.id === e.target.value) || {}; $('#f_manager_name').value = c.manager_name || ''; $('#f_tl_name').value = c.tl_name || ''; };
   $('#dlg').showModal();
 }
 $('#cancel').onclick = () => $('#dlg').close();
@@ -248,12 +276,12 @@ $('#frm').onsubmit = async e => {
   e.preventDefault();
   const p = { idem_key: idem }; document.querySelectorAll('#fields [id^=f_]').forEach(el => p[el.id.slice(2)] = el.value);
   const missing = FIELDS.filter(f => !f[3] && !p[f[0]]).map(f => f[1]);
-  if (me.role === 'admin' && !p.counsellor_id) missing.unshift('Counsellor');
+  if ((!me || me.role === 'admin') && !p.counsellor_id) missing.unshift('Counsellor');
   if (missing.length) { $('#ferr').textContent = 'Required: ' + missing.join(', '); return; }
   const b = $('#sub'); b.disabled = true; b.textContent = 'Saving…'; $('#ferr').textContent = '';
   try {
-    const r = await api('submit', p);
-    idem = null; $('#dlg').close(); toast(r.duplicate ? 'Already saved (' + r.record_id + ')' : 'Admission saved (' + r.record_id + ')'); load();
+    const r = await api(me ? 'submit' : 'public_submit', p);
+    idem = null; $('#dlg').close(); toast(r.duplicate ? 'Already submitted. Reference ' + r.record_id : 'Admission submitted successfully. Reference ' + r.record_id); if (me) load();
   } catch (err) { $('#ferr').textContent = err.message; }   // idem key kept so a retry cannot double-save
   finally { b.disabled = false; b.textContent = 'Save admission'; }
 };
@@ -311,6 +339,40 @@ $('#pfrm').onsubmit = async e => {
     token = r.token; try { sessionStorage.setItem('tk', token); } catch (x) {}
     const was = pwForced; pwForced = false; $('#pdlg').close(); toast('Password changed'); if (was) go('overview');
   } catch (err) { $('#perr').textContent = err.message; }
+  finally { b.disabled = false; }
+};
+
+/* ---- public portal + payments ---- */
+$('#pubbtn').onclick = async () => {
+  try { const d = await api('public_options'); opts = d.opts; pubC = d.counsellors; codeReq = d.codeRequired; $('#lerr').textContent = ''; openForm(); }
+  catch (e) { $('#lerr').textContent = e.message; }
+};
+let payRid = '', payKey = null;
+async function openPay(id) {
+  payRid = id; payKey = payKey || key();
+  try {
+    const d = await api('payments', { record_id: id });
+    $('#pytitle').textContent = d.record.app_no + ' · ' + d.record.candidate;
+    $('#pysum').textContent = 'Admission value ' + inr(d.value) + ' · Received ' + inr(d.received) + ' · Outstanding ' + inr(d.balance);
+    $('#pyrows').innerHTML = d.payments.length ? d.payments.map(x => `<tr><td>${esc(x.received_date)}</td><td>${x.kind === 'refund' ? 'Refund' : 'Payment'}</td><td class="n">${inr(x.amount)}</td><td>${esc(x.method)}</td><td>${esc(x.reference)}</td><td>${esc(x.status)}</td><td>${d.canReverse && x.status !== 'Reversed' ? `<button class="btn alt" data-r="${esc(x.payment_id)}">Reverse</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="7" class="empty">No payments recorded yet.</td></tr>';
+    $('#pyform').classList.toggle('hide', !d.canAdd); $('#pyerr').textContent = '';
+    $('#py_date').value = $('#py_date').max = new Date().toISOString().slice(0, 10);
+    document.querySelectorAll('[data-r]').forEach(b => b.onclick = async () => {
+      const reason = prompt('Reason for reversal?'); if (!reason) return;
+      try { await api('set_payment_status', { payment_id: b.dataset.r, status: 'Reversed', reason }); toast('Payment reversed'); openPay(payRid); load(); } catch (e) { toast(e.message); }
+    });
+    if (!$('#pydlg').open) $('#pydlg').showModal();
+  } catch (e) { toast(e.message); }
+}
+$('#pyclose').onclick = () => $('#pydlg').close();
+$('#pyform').onsubmit = async e => {
+  e.preventDefault(); const b = $('#pysub'); b.disabled = true; $('#pyerr').textContent = '';
+  if (!$('#py_amount').value || !$('#py_date').value) { $('#pyerr').textContent = 'Amount and received date are required.'; b.disabled = false; return; }
+  try {
+    await api('add_payment', { record_id: payRid, idem_key: payKey, amount: $('#py_amount').value, received_date: $('#py_date').value, kind: $('#py_kind').value, status: $('#py_status').value,
+      method: $('#py_method').value, reference: $('#py_ref').value, next_date: $('#py_next').value, remarks: $('#py_rem').value });
+    toast('Payment recorded'); payKey = null; $('#pyform').reset(); openPay(payRid); load();
+  } catch (err) { $('#pyerr').textContent = err.message; }   // key kept so a retry cannot double-record
   finally { b.disabled = false; }
 };
 </script>
