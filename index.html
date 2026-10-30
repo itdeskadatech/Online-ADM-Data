@@ -53,6 +53,22 @@ nav{background:linear-gradient(180deg,#0f2447,#183a74)}
 .card{border-top:3px solid #1d5fd1}.grid .card b{background:linear-gradient(90deg,#0f2447,#1d5fd1);-webkit-background-clip:text;background-clip:text;color:transparent}
 .bar2{height:6px;background:#e6ecf7;border-radius:4px;margin-top:6px}.bar2 i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#1d5fd1,#3da5ff)}
 .mgrid .card{border-top-color:#3da5ff;transition:transform .15s}.mgrid .card:hover{transform:translateY(-2px)}
+#main.dark{background:#0b0d12;color:#e8ebf2}.dk{--c:#14171f;--l:#262b38;--m:#8a93a6}
+.dk h1,.dk h3{color:#fff}.dk select,.dk input{background:#14171f;color:#e8ebf2;border-color:#262b38}
+.dk .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0 22px}
+.dk .k{background:var(--c);border:1px solid var(--l);border-radius:16px;padding:16px}.dk .k small{letter-spacing:.08em;color:var(--m);text-transform:uppercase;font-size:12px;display:block;margin:6px 0}
+.dk .k b{font-size:34px;line-height:1.1;display:block}.dk .k p{margin:6px 0 0;color:var(--m);font-size:13px}
+.dk .lb{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.dk .ec{background:var(--c);border:1px solid var(--l);border-radius:16px;padding:16px}.dk .ec.top{border-color:#b8860b;box-shadow:0 0 18px #b8860b33}
+.dk .eh{display:flex;gap:10px;align-items:center}.dk .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#ff9a1f,#ff7a00);display:grid;place-items:center;font-weight:600;color:#111}
+.dk .md{font-size:24px;min-width:34px;text-align:center}.dk .bd{display:inline-block;font-size:11px;font-weight:600;border:1px solid var(--l);border-radius:10px;padding:1px 8px;margin:3px 3px 0 0;letter-spacing:.04em}
+.dk .g{color:#34d399;border-color:#1f6b50}.dk .a{color:#fbbf24;border-color:#7a5a12}.dk .r{color:#fb7185;border-color:#7a2a38}.dk .bl{color:#60a5fa}
+.dk .tl3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.dk .tl3 div{background:#0f1218;border-radius:10px;padding:10px;text-align:center}.dk .tl3 b{font-size:22px;display:block}.dk .tl3 small{color:var(--m);font-size:11px;letter-spacing:.08em}
+.dk .pb{height:8px;border-radius:5px;background:#222735;overflow:hidden}.dk .pb i{display:block;height:100%;background:linear-gradient(90deg,#ff7a00,#ffb347)}
+.dk .pr{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;color:#cfd5e3}.dk .ft{text-align:center;color:#cfd5e3;font-size:13px;margin-top:10px}.dk .ft2{text-align:right;color:var(--m);font-size:12px;margin-top:8px}
+.dk .sp{background:#0f1218;border-radius:10px;padding:8px;margin-top:10px;display:flex;align-items:center;justify-content:space-between}
+.dk table{color:#e8ebf2}.dk th{color:var(--m)}.dk td,.dk th{border-color:var(--l)}.dk .panel{background:var(--c)}
+.dk .hc{min-width:92px;text-align:center}.dk .hc small{display:block;color:var(--m)}
 </style>
 </head>
 <body>
@@ -67,6 +83,7 @@ nav{background:linear-gradient(180deg,#0f2447,#183a74)}
   <nav>
     <h2>Admissions</h2>
     <button data-v="overview" class="on">Overview</button>
+    <button data-v="board">Target vs Achievement</button>
     <button data-v="records">Admission records</button>
     <button data-v="targets" id="nt" class="hide">Target management</button>
     <button data-v="users" id="nu" class="hide">User management</button>
@@ -103,6 +120,13 @@ nav{background:linear-gradient(180deg,#0f2447,#183a74)}
   <p class="err" id="perr"></p>
   <div class="acts"><button type="button" class="btn alt" id="pcancel">Cancel</button><button class="btn" id="psub">Save password</button></div>
 </form></dialog>
+<dialog id="bdlg"><div style="padding:20px"><h1 style="margin-bottom:6px">Bulk add users</h1>
+  <div id="bform"><p style="color:var(--mute);margin:0 0 10px">One person per line, columns separated by commas or tabs (paste straight from Excel or Google Sheets):<br><b>Name, User ID, Password, Role, Manager, Team Leader</b><br>Role: Manager, Team Leader or Counsellor. Manager and Team Leader can be a User ID or full name. Leave Password blank to generate one. Max 50 per batch.</p>
+  <div class="bar"><input type="file" id="b_file" accept=".csv,.txt"><a href="#" id="b_tpl" class="btn alt" style="text-decoration:none">Download template</a></div>
+  <textarea id="b_text" rows="9" style="width:100%" placeholder="Priya Verma, priya.v, , Manager&#10;Amit Kumar, amit.k, , Team Leader, priya.v&#10;Rahul Sharma, rahul.s, , Counsellor, priya.v, amit.k"></textarea>
+  <p class="err" id="berr" style="white-space:pre-wrap"></p>
+  <div class="acts"><button type="button" class="btn alt" id="bcancel">Cancel</button><button type="button" class="btn" id="bsub">Create users</button></div></div>
+  <div id="bres" class="hide"></div></div></dialog>
 <dialog id="udlg"><form id="ufrm" novalidate>
   <h1 style="margin-bottom:6px" id="utitle">Add user</h1>
   <p style="color:var(--mute);margin:0 0 14px">Give the user this ID and password. They must set their own password at first sign-in.</p>
@@ -174,9 +198,10 @@ $('#out').onclick = e => { e.preventDefault(); signOut(); };
 document.querySelectorAll('nav [data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
 
 function go(v) {
-  view = v;
+  view = v; $('#main').classList.remove('dark');
   if (v === 'users') return usersView();
   if (v === 'targets') return targetsView();
+  if (v === 'board') return boardView();
   document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   const canAdd = true;   // all roles can add admissions; the server limits which counsellors each role may pick
   const yr = new Date().getFullYear();
@@ -292,8 +317,8 @@ $('#frm').onsubmit = async e => {
 let ulist = [], editId = '';
 async function usersView() {
   document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === 'users'));
-  $('#main').innerHTML = '<div class="top"><h1>User management</h1><button class="btn" id="uadd">+ Add user</button></div><div id="body"><div class="skel"></div></div>';
-  $('#uadd').onclick = () => openUser(null);
+  $('#main').innerHTML = '<div class="top"><h1>User management</h1><div><button class="btn alt" id="ubulk">Bulk add</button> <button class="btn" id="uadd">+ Add user</button></div></div><div id="body"><div class="skel"></div></div>';
+  $('#uadd').onclick = () => openUser(null); $('#ubulk').onclick = openBulk;
   try {
     ulist = await api('users');
     const nm = id => (ulist.find(x => x.user_id === id) || {}).name || '—';
@@ -459,6 +484,120 @@ async function saveT(mode, reason) {
     toast(r.saved + ' target(s) saved'); loadT();
   } catch (e) { $('#tmsg').textContent = e.message; }
   finally { b.disabled = false; }
+}
+
+/* ---- bulk add users (admin) ---- */
+const csvCell = v => '"' + String(v).replace(/"/g, '""') + '"';
+function openBulk() { $('#bform').classList.remove('hide'); $('#bres').classList.add('hide'); $('#b_text').value = ''; $('#berr').textContent = ''; $('#bdlg').showModal(); }
+function parseBulk(txt) {
+  return txt.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(l => {
+    const c = (l.includes('\t') ? l.split('\t') : l.split(',')).map(x => x.trim().replace(/^"|"$/g, ''));
+    return { name: c[0], username: c[1], password: c[2], role: c[3], manager: c[4], tl: c[5] };
+  }).filter((r, i) => !(i === 0 && /^name$/i.test(r.name || '')));
+}
+$('#bcancel').onclick = () => $('#bdlg').close();
+$('#b_file').onchange = e => { const f = e.target.files[0]; if (f) f.text().then(t => { $('#b_text').value = t; }); };
+$('#b_tpl').onclick = e => { e.preventDefault(); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['Name,User ID,Password,Role,Manager,Team Leader\nPriya Verma,priya.v,,Manager,,\nAmit Kumar,amit.k,,Team Leader,priya.v,\nRahul Sharma,rahul.s,,Counsellor,priya.v,amit.k\n'], { type: 'text/csv' })); a.download = 'users-template.csv'; a.click(); };
+$('#bsub').onclick = async () => {
+  const rows = parseBulk($('#b_text').value), b = $('#bsub'); $('#berr').textContent = '';
+  if (!rows.length) { $('#berr').textContent = 'Paste or upload at least one user.'; return; }
+  b.disabled = true; b.textContent = 'Creating…';
+  try {
+    const r = await api('bulk_users', { rows });
+    if (r.errors) { $('#berr').textContent = 'No users were created. Fix these rows:\n' + r.errors.map(x => 'Row ' + x.row + ' (' + x.name + '): ' + x.error).join('\n'); return; }
+    $('#bform').classList.add('hide'); const res = $('#bres'); res.classList.remove('hide');
+    res.innerHTML = `<p><b>${r.created} users created.</b> Copy or download these logins now. Passwords are shown only once, and each person must change theirs at first sign-in.</p>
+      <div style="overflow-x:auto"><table><tr><th>Name</th><th>Role</th><th>User ID</th><th>Temporary password</th></tr>${r.credentials.map(c => `<tr><td>${esc(c.name)}</td><td>${ROLE[c.role]}</td><td>${esc(c.username)}</td><td><code>${esc(c.password)}</code></td></tr>`).join('')}</table></div>
+      <div class="acts"><button class="btn alt" id="b_copy">Copy</button><button class="btn alt" id="b_dl">Download CSV</button><button class="btn" id="b_done">Done</button></div>`;
+    const lines = r.credentials.map(c => [c.name, ROLE[c.role], c.username, c.password]);
+    $('#b_copy').onclick = () => navigator.clipboard.writeText(lines.map(l => l.join('\t')).join('\n')).then(() => toast('Copied'));
+    $('#b_dl').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([['Name,Role,User ID,Temporary password'].concat(lines.map(l => l.map(csvCell).join(','))).join('\n')], { type: 'text/csv' })); a.download = 'new-user-logins.csv'; a.click(); };
+    $('#b_done').onclick = () => { $('#bdlg').close(); res.innerHTML = ''; usersView(); };
+  } catch (e) { $('#berr').textContent = e.message; }
+  finally { b.disabled = false; b.textContent = 'Create users'; }
+};
+
+/* ---- Target vs Achievement board (all roles) ---- */
+const bs = { type: 'monthly', year: new Date().getFullYear(), month: new Date().getMonth() + 1, week: mondayOf(new Date().toISOString().slice(0, 10)), level: '', metric: 'adm', tab: 'live', q: '' };
+let bd = null;
+const dshort = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' });
+function boardView() {
+  document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === 'board'));
+  const yr = new Date().getFullYear(), lv = { admin: [['manager', 'Managers'], ['tl', 'Team Leaders'], ['counsellor', 'Counsellors']], manager: [['counsellor', 'My counsellors'], ['tl', 'My team leaders'], ['manager', 'Myself']], tl: [['counsellor', 'My counsellors'], ['tl', 'Myself']], counsellor: [] }[me.role];
+  if (!bs.level || !lv.some(x => x[0] === bs.level)) bs.level = lv.length ? lv[0][0] : 'counsellor';
+  $('#main').classList.add('dark');
+  $('#main').innerHTML = `<div class="dk"><div class="top"><h1>🎯 Target vs Achievement</h1><div class="bar" style="margin:0"><button class="btn ${bs.tab === 'live' ? '' : 'alt'}" id="b_live">Live</button><button class="btn ${bs.tab === 'hist' ? '' : 'alt'}" id="b_hist">History</button></div></div>
+    <div class="bar"><select id="bt"><option value="monthly">Monthly</option><option value="weekly">Weekly (Mon–Sun)</option></select>
+    <select id="by">${[yr + 1, yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('')}</select><select id="bm">${MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
+    <span id="bwk" class="bar" style="margin:0"><button class="btn alt" id="bpw" aria-label="Previous week">‹</button><input type="date" id="bw"><button class="btn alt" id="bnw" aria-label="Next week">›</button></span>
+    ${lv.length > 1 ? `<select id="bl">${lv.map(x => `<option value="${x[0]}">${x[1]}</option>`).join('')}</select>` : ''}
+    <select id="bmet"><option value="adm">Admissions</option><option value="rev">Revenue (₹)</option></select><input id="bq" placeholder="Search name…"></div>
+    <p id="bmsg" class="err" role="alert"></p><div id="bbody"></div></div>`;
+  $('#bt').value = bs.type; $('#by').value = bs.year; $('#bm').value = bs.month; $('#bw').value = bs.week; $('#bmet').value = bs.metric; $('#bq').value = bs.q; if ($('#bl')) $('#bl').value = bs.level;
+  const sync = () => { const w = bs.type === 'weekly' || false; $('#bwk').classList.toggle('hide', !(bs.tab === 'live' && w)); $('#bm').classList.toggle('hide', !(bs.tab === 'live' && !w)); $('#bt').classList.toggle('hide', bs.tab !== 'live'); };
+  const shift = n => { const d = new Date(bs.week + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); bs.week = d.toISOString().slice(0, 10); $('#bw').value = bs.week; loadB(); };
+  $('#bt').onchange = e => { bs.type = e.target.value; sync(); loadB(); }; $('#by').onchange = e => { bs.year = +e.target.value; loadB(); }; $('#bm').onchange = e => { bs.month = +e.target.value; loadB(); };
+  $('#bw').onchange = e => { if (e.target.value) { bs.week = mondayOf(e.target.value); e.target.value = bs.week; loadB(); } };
+  $('#bpw').onclick = () => shift(-7); $('#bnw').onclick = () => shift(7);
+  if ($('#bl')) $('#bl').onchange = e => { bs.level = e.target.value; loadB(); };
+  $('#bmet').onchange = e => { bs.metric = e.target.value; renderB(); };
+  let tq; $('#bq').oninput = e => { bs.q = e.target.value; clearTimeout(tq); tq = setTimeout(renderB, 200); };
+  $('#b_live').onclick = () => { bs.tab = 'live'; boardView(); }; $('#b_hist').onclick = () => { bs.tab = 'hist'; boardView(); };
+  sync(); loadB();
+}
+async function loadB() {
+  $('#bmsg').textContent = ''; $('#bbody').innerHTML = '<div class="skel"></div>';
+  try { bd = bs.tab === 'live' ? await api('board', { period_type: bs.type, year: bs.year, month: bs.month, week_start: bs.week, level: bs.level })
+    : await api('board_history', { year: bs.year, level: bs.level }); renderB(); }
+  catch (e) { $('#bbody').innerHTML = ''; $('#bmsg').textContent = e.message; }
+}
+const spark = (v, w = 230, h = 40) => {
+  if (v.length < 2) return '<svg width="' + w + '" height="' + h + '"></svg>';
+  const c = []; v.reduce((a, x) => (c.push(a + x), a + x), 0); const mx = Math.max(...c, 1);
+  const pts = c.map((y, i) => (i / (c.length - 1) * w).toFixed(1) + ',' + (h - 3 - y / mx * (h - 8)).toFixed(1));
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polygon points="0,${h} ${pts.join(' ')} ${w},${h}" fill="#ffb34722"/><polyline points="${pts.join(' ')}" fill="none" stroke="#ffb347" stroke-width="2"/></svg>`;
+};
+function renderB() {
+  if (!bd) return;
+  const M = bs.metric, q = bs.q.trim().toLowerCase(), F = v => M === 'rev' ? inr(v) : Math.round(v).toLocaleString('en-IN');
+  if (bs.tab === 'hist') return renderH(F, q);
+  const P = bd.period, E = bd.entities.map(e => ({ ...e, t: M === 'rev' ? e.revenue_target : e.admission_target, a: M === 'rev' ? e.revenue : e.admissions, s: M === 'rev' ? e.series_rev : e.series_adm }));
+  const wt = E.filter(e => e.t > 0), tt = wt.reduce((s, e) => s + e.t, 0), ta = wt.reduce((s, e) => s + e.a, 0), rem = Math.max(tt - ta, 0), pc = tt ? ta / tt * 100 : null;
+  const proj = P.passed > 0 && !P.upcoming ? ta / P.passed * P.total : null, need = P.left > 0 ? rem / P.left : 0;
+  const pct = e => e.t > 0 ? e.a / e.t * 100 : null, unit = M === 'rev' ? '' : '';
+  E.sort((x, y) => (pct(y) ?? -1) - (pct(x) ?? -1) || y.a - x.a);
+  const kp = [['🎯', 'Total target', tt ? F(tt) : '—', '#fff', 'Across ' + wt.length + ' ' + (bd.level === 'tl' ? 'team leaders' : bd.level + 's')],
+    ['✅', 'Total achieved', F(ta), '#34d399', `<div class="pb"><i style="width:${Math.min(100, pc || 0)}%"></i></div>`],
+    ['📉', 'Remaining target', tt ? F(rem) : '—', '#60a5fa', tt ? (100 - Math.min(100, pc)).toFixed(1) + '% left to close' : 'Target Not Assigned'],
+    ['📈', 'Overall achievement', pc == null ? '—' : pc.toFixed(1) + '%', '#fb923c', P.left > 0 && tt && !P.upcoming ? `Needs ~${F(need)}/day · Projected end: ${F(proj ?? 0)} (${tt ? ((proj ?? 0) / tt * 100).toFixed(1) : 0}%)` : P.upcoming ? 'Upcoming period' : 'Period closed'],
+    ['🗓️', 'Days passed', P.passed, '#a78bfa', 'of ' + P.total + ' days (from ' + dshort(P.start) + ')'], ['⏳', 'Days left', P.left, '#c084fc', 'till ' + dshort(P.end) + ' ' + P.end.slice(0, 4)]];
+  const cards = E.filter(e => !q || e.name.toLowerCase().includes(q)).map((e, i) => {
+    const p = pct(e), exp = P.total ? P.passed / P.total * 100 : 0;
+    const st = p == null ? ['TARGET NOT ASSIGNED', ''] : P.upcoming ? ['UPCOMING', 'bl'] : p >= 100 ? ['TARGET ACHIEVED', 'g'] : P.passed < 3 ? ['JUST STARTED', 'bl'] : (exp && p / exp >= 0.9 ? ['ON TRACK', 'g'] : ['TARGET AT RISK', 'a']);
+    const half = Math.floor(e.s.length / 2), last = e.s.slice(-7).reduce((a, b) => a + b, 0), prev = e.s.slice(-14, -7).reduce((a, b) => a + b, 0);
+    const tr = e.s.length < 8 ? ['', ''] : last > prev ? ['📈 Trending up', 'g'] : last < prev ? ['📉 Trending down', 'r'] : ['➖ Steady', ''];
+    const ago = e.last ? Math.max(0, Math.round((new Date(P.today) - new Date(e.last)) / 864e5)) : null, left = e.t > 0 ? Math.max(e.t - e.a, 0) : null;
+    const medal = p == null ? '' : i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+    return `<div class="ec${i === 0 && p != null ? ' top' : ''}"><div class="eh"><span class="md">${medal}</span><span class="av">${esc(e.name[0] || '?')}</span><div><b style="color:#fff">${esc(e.name)}</b><div>${i === 0 && p != null && ta > 0 ? '<span class="bd a">🏆 TOP PERFORMER</span>' : ''}<span class="bd ${st[1]}">${st[0]}</span></div>${e.manager_name || e.tl_name ? `<small style="color:var(--m)">${[e.manager_name && 'Mgr ' + esc(e.manager_name), e.tl_name && 'TL ' + esc(e.tl_name)].filter(Boolean).join(' · ')}</small>` : ''}</div></div>
+      <div class="tl3"><div><b>${e.t == null ? '—' : F(e.t)}</b><small>TARGET</small></div><div><b class="g" style="color:#34d399">${P.upcoming ? '—' : F(e.a)}</b><small>ACHIEVED</small></div><div><b class="bl">${left == null ? '—' : F(left)}</b><small>REMAINING</small></div></div>
+      <div class="pr"><span>Target Progress</span><b style="color:#fbbf24">${p == null ? '—' : p.toFixed(1) + '%'}</b></div><div class="pb"><i style="width:${Math.min(100, p || 0)}%"></i></div>
+      <div class="ft">${p == null ? 'Target Not Assigned' : P.upcoming ? 'Upcoming' : left === 0 ? '🎉 Target achieved' + (e.a > e.t ? ' · ' + F(e.a - e.t) + ' above' : '') : P.left > 0 ? `🗓️ Needs ~<b style="color:#fbbf24">${F(left / P.left)}</b>/day to hit target` : 'Period closed'}</div>
+      <div class="sp"><span>${e.s.length > 1 ? spark(e.s) : '<small style="color:var(--m)">No activity yet</small>'}</span><b class="${tr[1]}" style="font-size:12px">${tr[0]}</b></div>
+      <div class="ft">🔥 Active ${e.active_days}/${Math.max(e.s.length, 0)} days tracked</div><div class="ft2">${ago == null ? 'No activity yet' : ago === 0 ? 'Updated today' : 'Updated ' + ago + 'd ago'}</div></div>`;
+  });
+  $('#bbody').innerHTML = `<div class="kp">${kp.map(k => `<div class="k"><span style="font-size:22px">${k[0]}</span><small>${k[1]}</small><b style="color:${k[3]}">${k[2]}</b><p>${k[4]}</p></div>`).join('')}</div>
+    <h3 style="margin:0 0 12px">🏆 Live Leaderboard <span class="bd a">Auto-ranked</span></h3>${cards.length ? `<div class="lb">${cards.join('')}</div>` : '<div class="panel empty">Nobody matches. Assign targets in Target management, or clear the search.</div>'}
+    <p style="color:var(--m);font-size:12px;margin-top:14px">Rules: ${M === 'rev' ? 'revenue = payments received in the period' : 'admissions = eligible admissions dated in the period'}. At risk = pace below 90% of the time elapsed (after the first 3 days). Needs/day = remaining ÷ days left. Weekly and monthly targets are tracked separately.</p>`;
+}
+function renderH(F, q) {
+  const M = bs.metric, cl = (a, t) => t > 0 ? (a / t >= 1 ? 'g' : a / t >= 0.7 ? 'a' : 'r') : '';
+  const rows = bd.entities.filter(e => !q || e.name.toLowerCase().includes(q)).map(e => {
+    const T = e.months.reduce((s, m) => s + (M === 'rev' ? m.rt : m.at) || 0, 0), A = e.months.reduce((s, m) => s + (M === 'rev' ? m.rev : m.adm), 0);
+    return `<tr><td style="position:sticky;left:0;background:var(--c)"><b>${esc(e.name)}</b></td>${e.months.map(m => { const t = M === 'rev' ? m.rt : m.at, a = M === 'rev' ? m.rev : m.adm;
+      return `<td class="hc"><b class="${cl(a, t)}">${t > 0 ? (a / t * 100).toFixed(0) + '%' : '—'}</b><small>${F(a)} / ${t == null ? '—' : F(t)}</small></td>`; }).join('')}
+      <td class="hc"><b class="${cl(A, T)}">${T > 0 ? (A / T * 100).toFixed(0) + '%' : '—'}</b><small>${F(A)} / ${T ? F(T) : '—'}</small></td></tr>`; });
+  $('#bbody').innerHTML = `<div class="panel"><h3>${bs.year} month-by-month: achieved / target</h3>${rows.length ? `<table><tr><th></th>${MN.map(m => `<th class="hc">${m}</th>`).join('')}<th class="hc">Year</th></tr>${rows.join('')}</table>` : '<div class="empty">No people at this level.</div>'}
+    <p style="color:var(--m);font-size:12px">Green = target met · amber = 70%+ · red = below 70% · “—” = Target Not Assigned. Each month is measured against the target saved for that month.</p></div>`;
 }
 </script>
 </body>
