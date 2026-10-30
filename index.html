@@ -56,7 +56,7 @@ nav{background:linear-gradient(180deg,#0f2447,#183a74)}
 </style>
 </head>
 <body>
-<section id="login"><div class="box"><h1>Online Admission Entry</h1><p style="color:var(--mute)">Submit a new admission. No login needed.</p><button class="btn" id="pubbtn">Submit an admission</button></div><div class="box">
+<section id="login"><div class="box"><h1>Online Admission Entry</h1><p style="color:var(--mute)">Submit a new admission. No login needed.</p><button class="btn" id="pubbtn">Submit an admission</button><p id="pmsg" class="err" role="alert"></p></div><div class="box">
   <h1>Staff login</h1>
   <p style="color:var(--mute)">Sign in with the user ID and password your admin gave you.</p>
   <form id="lf" style="display:grid;gap:10px"><input id="l_u" placeholder="User ID" autocomplete="username" required><input id="l_p" type="password" placeholder="Password" autocomplete="current-password" required><button class="btn" id="lb">Sign in</button></form>
@@ -268,7 +268,7 @@ function openForm() {
   $('#fields').innerHTML = fs.join(''); $('#ferr').textContent = '';
   $('#f_done_date').max = new Date().toISOString().slice(0, 10);
   if (pub) $('#f_counsellor_id').onchange = e => { const c = pubC.find(x => x.id === e.target.value) || {}; $('#f_manager_name').value = c.manager_name || ''; $('#f_tl_name').value = c.tl_name || ''; };
-  $('#dlg').showModal();
+  if (!$('#dlg').open) $('#dlg').showModal();
 }
 $('#cancel').onclick = () => $('#dlg').close();
 $('#clr').onclick = () => { $('#frm').reset(); $('#ferr').textContent = ''; };
@@ -343,9 +343,26 @@ $('#pfrm').onsubmit = async e => {
 };
 
 /* ---- public portal + payments ---- */
+let pubReady = null;
+function loadPub() {   // one shared request; result also cached locally so the next visit opens instantly
+  return pubReady = pubReady || api('public_options').then(d => {
+    opts = d.opts; pubC = d.counsellors; codeReq = d.codeRequired;
+    try { localStorage.setItem('pubopts', JSON.stringify(d)); } catch (e) {}
+    return d;
+  }).catch(e => { pubReady = null; throw e; });
+}
+try { const c = JSON.parse(localStorage.getItem('pubopts') || 'null'); if (c) { opts = c.opts; pubC = c.counsellors; codeReq = c.codeRequired; } } catch (e) {}
+loadPub().catch(() => {});   // warm the backend and fetch fresh lists while the visitor reads the page
 $('#pubbtn').onclick = async () => {
-  try { const d = await api('public_options'); opts = d.opts; pubC = d.counsellors; codeReq = d.codeRequired; $('#lerr').textContent = ''; openForm(); }
-  catch (e) { $('#lerr').textContent = e.message; }
+  const m = $('#pmsg'); m.textContent = '';
+  if (pubC.length) { openForm(); loadPub().catch(() => {}); return; }   // cached lists: open at once, refresh quietly
+  $('#fields').innerHTML = '<div class="skel" style="grid-column:1/-1"></div><div class="skel" style="grid-column:1/-1"></div>'; $('#ferr').textContent = ''; $('#dlg').showModal();
+  try { await loadPub(); openForm(); }
+  catch (e) {
+    $('#dlg').close();
+    m.textContent = /Sign in required|Unknown action/.test(e.message)
+      ? 'The server is still on an older version. In Apps Script choose Deploy > Manage deployments > Edit > New version > Deploy, then reload this page.' : e.message;
+  }
 };
 let payRid = '', payKey = null;
 async function openPay(id) {
