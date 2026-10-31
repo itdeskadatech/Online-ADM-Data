@@ -8,67 +8,48 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--navy:#0f2447;--blue:#1d5fd1;--bg:#f4f6fa;--card:#fff;--ink:#16202f;--mute:#5d6b82;--line:#e1e6ef;--ok:#157347;--bad:#b42318}
-*{box-sizing:border-box}body{margin:0;font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-button,input,select,textarea{font:inherit}
-.hide{display:none!important}
-#login{min-height:100vh;display:grid;place-items:center;padding:20px}
-.box{background:var(--card);padding:32px;border-radius:12px;box-shadow:0 2px 12px #0f244714;max-width:380px;width:100%}
-#app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
-nav{background:var(--navy);color:#fff;padding:20px 12px;display:flex;flex-direction:column;gap:4px}
-nav h2{font-size:16px;margin:0 8px 16px}nav .who{margin:auto 8px 0;font-size:13px;opacity:.8}
-nav button{background:none;border:0;color:#cfd8ea;text-align:left;padding:10px 12px;border-radius:8px;cursor:pointer}
-nav button.on,nav button:hover{background:#1d3a6e;color:#fff}
-main{padding:24px;min-width:0}
-.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
-h1{font-size:22px;margin:0}
-.btn{background:var(--blue);color:#fff;border:0;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:500}
-.btn.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn:disabled{opacity:.6;cursor:wait}
-.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-select,input,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:0}
-input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
-.card{background:var(--card);border-radius:10px;padding:14px 16px;box-shadow:0 1px 4px #0f24470f}
-.card small{color:var(--mute);display:block}.card b{font-size:20px}
-.panel{background:var(--card);border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px #0f24470f;overflow-x:auto}
-.panel h3{margin:0 0 10px;font-size:16px}
-.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.mgrid .card{cursor:pointer;border:1px solid transparent}.mgrid .card:hover{border-color:var(--blue)}
+:root{--bg:#f2f5fb;--sf:#fff;--sf2:#f6f8fc;--ink:#0e1a33;--mute:#5a6884;--line:#e2e8f2;--pri:#1d5bd6;--pri2:#4a90ff;--navy:#0a1a3a;--ok:#0f7d5a;--warn:#a96a00;--bad:#c0392b;--info:#1d5bd6;--sh:0 1px 2px #0a1a3a10,0 6px 18px #0a1a3a0b}
+[data-theme=dark]{--bg:#080d19;--sf:#101828;--sf2:#0c1423;--ink:#e7ecf6;--mute:#8d9bb6;--line:#1d2a44;--pri:#4b8bff;--pri2:#7db0ff;--navy:#060b16;--ok:#34d399;--warn:#fbbf24;--bad:#fb7185;--info:#7db0ff;--sh:none}
+*{box-sizing:border-box}body{margin:0;font:14.5px/1.5 'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}.hide{display:none!important}h1{font-size:22px;margin:0;letter-spacing:-.01em}h3{margin:0 0 12px;font-size:15px}
+a{color:var(--pri)}.sub{color:var(--mute);margin:2px 0 0;font-size:13px}.ic{width:18px;height:18px;flex:none}
+#login{min-height:100vh;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:center;padding:20px;background:radial-gradient(1200px 500px at 10% -10%,#1d5bd622,transparent),var(--bg)}
+.box{background:var(--sf);padding:30px;border-radius:16px;box-shadow:var(--sh);border:1px solid var(--line);max-width:380px;width:100%}
+#app{display:grid;grid-template-columns:244px minmax(0,1fr);min-height:100vh}
+nav{background:linear-gradient(185deg,var(--navy),#12306b);color:#fff;padding:20px 12px;display:flex;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh;overflow:auto}
+nav h2{font-size:16px;margin:0 10px 18px;letter-spacing:.02em}nav button{display:flex;gap:10px;align-items:center;background:none;border:0;color:#c5d2ec;text-align:left;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .15s}
+nav button.on{background:#ffffff1f;color:#fff;box-shadow:inset 3px 0 0 var(--pri2)}nav button:hover{background:#ffffff14;color:#fff}
+.who{margin:auto 6px 0;padding-top:14px;border-top:1px solid #ffffff22;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.who a{color:#c5d2ec}
+.av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pri),var(--pri2));display:inline-grid;place-items:center;font-weight:600;color:#fff;flex:none}
+main{padding:26px 28px;min-width:0}.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.btn{background:linear-gradient(180deg,var(--pri2),var(--pri));color:#fff;border:0;padding:9px 16px;border-radius:10px;cursor:pointer;font-weight:500;box-shadow:0 1px 2px #0a1a3a30}.btn.alt{background:var(--sf);color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn:disabled{opacity:.6;cursor:wait}.btn.sm{padding:5px 10px;font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center}
+select,input,textarea{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--sf);min-width:0}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--pri2);outline-offset:1px}
+.kpis,.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:12px;margin-bottom:16px}
+.kpi,.card{background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--sh);min-width:0}
+.kpi span,.card small{display:block;color:var(--mute);font-size:12px;font-weight:500;letter-spacing:.03em;text-transform:uppercase}.kpi b,.card b{display:block;font-size:24px;line-height:1.25;margin-top:4px;overflow-wrap:anywhere}
+.kpi p{margin:4px 0 0;color:var(--mute);font-size:12.5px}.kpi .na{font-size:17px;color:var(--warn)}.kpi.acc{border-top:3px solid var(--pri2)}
+.panel{background:var(--sf);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:var(--sh);overflow-x:auto}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;margin-bottom:16px}.cg .panel{margin:0}.cv{position:relative;height:250px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}.mgrid .card{cursor:pointer;transition:transform .15s,border-color .15s}.mgrid .card:hover{transform:translateY(-2px);border-color:var(--pri2)}
 .mgrid p{margin:2px 0;font-size:13px;color:var(--mute)}.mgrid h4{margin:0 0 6px}
-table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mute);font-weight:500}
-td.n,th.n{text-align:right}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.empty{color:var(--mute);padding:20px;text-align:center}
-.skel{height:70px;border-radius:10px;background:linear-gradient(90deg,#e8ecf3,#f4f6fa,#e8ecf3);background-size:200% 100%;animation:s 1.2s infinite}
-@keyframes s{to{background-position:-200% 0}}
-dialog{border:0;border-radius:12px;padding:0;width:min(760px,96vw);max-height:92vh}dialog::backdrop{background:#0f244788}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mute);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+td.n,th.n{text-align:right}th[data-k]{cursor:pointer}th[data-k]:hover{color:var(--pri)}tbody tr:hover td{background:var(--sf2)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}.empty{color:var(--mute);padding:22px;text-align:center}
+.bdg{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid var(--line);white-space:nowrap}
+.bdg.ok{color:var(--ok);border-color:currentColor;background:#0f7d5a12}.bdg.warn{color:var(--warn);border-color:currentColor;background:#a96a0012}.bdg.bad{color:var(--bad);border-color:currentColor;background:#c0392b12}.bdg.info{color:var(--info);border-color:currentColor;background:#1d5bd612}.bdg.mute{color:var(--mute)}
+.pg{height:8px;border-radius:6px;background:var(--line);position:relative;overflow:hidden}.pg i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--pri),var(--pri2))}.pg i.ok{background:linear-gradient(90deg,#0f7d5a,#34d399)}.pg u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.5}
+.bar2{height:6px;background:var(--line);border-radius:4px;margin-top:6px}.bar2 i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pri),var(--pri2))}
+.rk{display:grid;grid-template-columns:34px minmax(120px,1.2fr) minmax(120px,2fr) auto;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line)}.rk:last-child{border:0}
+.rk .no{font-weight:600;color:var(--mute);text-align:center}.rk.first .no{color:var(--warn)}.rk small{color:var(--mute);display:block}
+.skel{height:80px;border-radius:14px;background:linear-gradient(90deg,var(--line),var(--sf2),var(--line));background-size:200% 100%;animation:s 1.2s infinite}@keyframes s{to{background-position:-200% 0}}
+dialog{border:0;border-radius:16px;padding:0;width:min(780px,96vw);max-height:92vh;background:var(--sf);color:var(--ink)}dialog::backdrop{background:#050a14a8}
 dialog form{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
-.fg .full{grid-column:1/-1}.req::after{content:" *";color:var(--bad)}
-.err{color:var(--bad);margin:10px 0 0}.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
-#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:8px;z-index:9}
-@media(max-width:800px){#app{grid-template-columns:1fr}nav{flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}nav h2{margin:0 8px 0 0}nav .who{display:none}.two,.fg{grid-template-columns:1fr}main{padding:14px}}
-@media(prefers-reduced-motion:reduce){.skel{animation:none}}
-#login{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;background:linear-gradient(135deg,#eaf0fb,#f7f9fd)}
-nav{background:linear-gradient(180deg,#0f2447,#183a74)}
-.card{border-top:3px solid #1d5fd1}.grid .card b{background:linear-gradient(90deg,#0f2447,#1d5fd1);-webkit-background-clip:text;background-clip:text;color:transparent}
-.bar2{height:6px;background:#e6ecf7;border-radius:4px;margin-top:6px}.bar2 i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#1d5fd1,#3da5ff)}
-.mgrid .card{border-top-color:#3da5ff;transition:transform .15s}.mgrid .card:hover{transform:translateY(-2px)}
-#main.dark{background:#0b0d12;color:#e8ebf2}.dk{--c:#14171f;--l:#262b38;--m:#8a93a6}
-.dk h1,.dk h3{color:#fff}.dk select,.dk input{background:#14171f;color:#e8ebf2;border-color:#262b38}
-.dk .kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0 22px}
-.dk .k{background:var(--c);border:1px solid var(--l);border-radius:16px;padding:16px}.dk .k small{letter-spacing:.08em;color:var(--m);text-transform:uppercase;font-size:12px;display:block;margin:6px 0}
-.dk .k b{font-size:34px;line-height:1.1;display:block}.dk .k p{margin:6px 0 0;color:var(--m);font-size:13px}
-.dk .lb{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
-.dk .ec{background:var(--c);border:1px solid var(--l);border-radius:16px;padding:16px}.dk .ec.top{border-color:#b8860b;box-shadow:0 0 18px #b8860b33}
-.dk .eh{display:flex;gap:10px;align-items:center}.dk .av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#ff9a1f,#ff7a00);display:grid;place-items:center;font-weight:600;color:#111}
-.dk .md{font-size:24px;min-width:34px;text-align:center}.dk .bd{display:inline-block;font-size:11px;font-weight:600;border:1px solid var(--l);border-radius:10px;padding:1px 8px;margin:3px 3px 0 0;letter-spacing:.04em}
-.dk .g{color:#34d399;border-color:#1f6b50}.dk .a{color:#fbbf24;border-color:#7a5a12}.dk .r{color:#fb7185;border-color:#7a2a38}.dk .bl{color:#60a5fa}
-.dk .tl3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.dk .tl3 div{background:#0f1218;border-radius:10px;padding:10px;text-align:center}.dk .tl3 b{font-size:22px;display:block}.dk .tl3 small{color:var(--m);font-size:11px;letter-spacing:.08em}
-.dk .pb{height:8px;border-radius:5px;background:#222735;overflow:hidden}.dk .pb i{display:block;height:100%;background:linear-gradient(90deg,#ff7a00,#ffb347)}
-.dk .pr{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;color:#cfd5e3}.dk .ft{text-align:center;color:#cfd5e3;font-size:13px;margin-top:10px}.dk .ft2{text-align:right;color:var(--m);font-size:12px;margin-top:8px}
-.dk .sp{background:#0f1218;border-radius:10px;padding:8px;margin-top:10px;display:flex;align-items:center;justify-content:space-between}
-.dk table{color:#e8ebf2}.dk th{color:var(--m)}.dk td,.dk th{border-color:var(--l)}.dk .panel{background:var(--c)}
-.dk .hc{min-width:92px;text-align:center}.dk .hc small{display:block;color:var(--m)}
+.fg .full{grid-column:1/-1}.req::after{content:" *";color:var(--bad)}.err{color:var(--bad);margin:10px 0 0}.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;z-index:9;box-shadow:var(--sh)}
+@media(max-width:900px){#app{grid-template-columns:1fr}nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}nav h2{margin:0 8px 0 0}.who{display:none}main{padding:16px 14px}.two,.fg{grid-template-columns:1fr}.rk{grid-template-columns:28px 1fr}.rk>:nth-child(3),.rk>:nth-child(4){grid-column:2}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -88,7 +69,8 @@ nav{background:linear-gradient(180deg,#0f2447,#183a74)}
     <button data-v="targets" id="nt" class="hide">Target management</button>
     <button data-v="users" id="nu" class="hide">User management</button>
     <button id="npw">Change password</button>
-    <div class="who"><span id="who"></span><br><a href="#" id="out" style="color:#cfd8ea">Sign out</a></div>
+    <button id="thm">Dark theme</button>
+    <div class="who"><span id="who" style="display:flex;gap:10px;align-items:center"></span><a href="#" id="out">Sign out</a></div>
   </nav>
   <main id="main"></main>
 </div>
@@ -154,8 +136,17 @@ let pubC = [], codeReq = false, token = null, me = null, opts = {}, counsellors 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inr = n => n == null ? '—' : '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
-const pct = n => n == null ? 'Target not configured' : n.toFixed(1) + '%';
+const pct = n => n == null ? 'Target Not Assigned' : n.toFixed(1) + '%';
 const key = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+const ico = p => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const ICONS = { overview: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  board: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>', records: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  targets: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .6 3.1 2.3 3.5 5.2"/>',
+  npw: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>', thm: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>' };
+document.querySelectorAll('nav button').forEach(b => { const k = b.dataset.v || b.id; if (ICONS[k]) b.innerHTML = ico(ICONS[k]) + '<span>' + b.textContent + '</span>'; });
+try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'light'; } catch (e) {}
+$('#thm').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = t; try { localStorage.setItem('theme', t); } catch (e) {} if (me) { if (view === 'board') renderB(); else if (view === 'overview') load(); } };
 
 async function api(action, params = {}) {
   let j;
@@ -186,7 +177,7 @@ async function boot() {
     me = b.user; opts = b.opts; counsellors = b.counsellors;
     $('#login').classList.add('hide'); $('#app').classList.remove('hide');
     $('#nu').classList.toggle('hide', me.role !== 'admin'); $('#nt').classList.toggle('hide', me.role !== 'admin');
-    $('#who').textContent = me.name + ' · ' + ROLE[me.role];
+    $('#who').innerHTML = `<span class="av">${esc((me.name || '?')[0].toUpperCase())}</span><span><b>${esc(me.name)}</b><br><small>${ROLE[me.role]}</small></span>`;
     me.mustChange ? openPw(true) : go('overview');
   } catch (e) { $('#lerr').textContent = e.message; }
 }
@@ -225,33 +216,44 @@ async function load() {
 }
 
 /* ---- overview ---- */
+const charts = {}, CL = ['#1d5bd6', '#4a90ff', '#0f9d74', '#d69e2e', '#7c5cff', '#e0576b', '#64748b'];
+function mk(id, cfg) {
+  if (charts[id]) charts[id].destroy(); const el = $('#' + id); if (!el) return;
+  const cs = getComputedStyle(document.documentElement); Chart.defaults.color = cs.getPropertyValue('--mute').trim(); Chart.defaults.borderColor = cs.getPropertyValue('--line').trim();
+  cfg.options = Object.assign({ maintainAspectRatio: false, animation: false }, cfg.options); charts[id] = new Chart(el, cfg);
+}
+const chartBox = (t, id, has, msg) => `<div class="panel"><h3>${t}</h3>${has ? `<div class="cv"><canvas id="${id}"></canvas></div>` : `<div class="empty">${msg}</div>`}</div>`;
 async function overview() {
-  const y = +$('#yr').value, m = $('#mo').value;
-  const d = await api('dashboard', { year: y, month: m ? +m : null }), k = d.kpi;
-  const cards = [['Total admissions', k.total], ['Completed', k.completed], ['Cancelled', k.cancelled], ['Pending', k.pending],
-    ['Eligible revenue', inr(k.revenue)], ['Target', k.target == null ? 'Target not configured' : inr(k.target)], ['Achievement', pct(k.ach)],
-    ['Remaining target', inr(k.remaining)], ['Outstanding balance', inr(k.outstanding)], ['Avg revenue / admission', inr(k.avg)]];
-  if (me.role !== 'counsellor') cards.push(['Active counsellors in scope', k.agents]);
-  if (d.canInc) cards.push([me.role === 'counsellor' ? 'My estimated incentive' : 'Estimated incentive', inr(k.incentive)]);
-  if (d.managerIncentive) cards.push(['My team incentive', d.managerIncentive.configured ? inr(d.managerIncentive.amount) : 'Manager incentive policy not configured.']);
-  const mc = d.months.filter(x => x.completed + x.cancelled + x.pending > 0 || x.target != null);
-  let h = `<div class="grid">${cards.map(c => `<div class="card"><small>${c[0]}</small><b>${c[1]}</b></div>`).join('')}</div>
-    <div class="panel"><h3>Revenue vs target, ${y}</h3><div style="height:260px"><canvas id="ch"></canvas></div></div>
+  const y = +$('#yr').value, m = $('#mo').value, d = await api('dashboard', { year: y, month: m ? +m : null }), k = d.kpi;
+  const tg0 = k.target == null ? `<b class="na">Target Not Assigned</b><p>${me.role === 'admin' ? 'Set it under Target management.' : 'Ask your admin to assign a revenue target.'}</p>` : `<b>${inr(k.target)}</b><p>${m ? MN[m - 1] + ' ' : ''}${y} revenue target</p>`;
+  const K = (l, v, s, acc) => `<div class="kpi${acc ? ' acc' : ''}"><span>${l}</span><b>${v}</b><p>${s || ''}</p></div>`;
+  const kp = [K('Total admissions', k.total, 'Created in period'), K('Completed', k.completed, 'Eligible status'), K('Cancelled', k.cancelled), K('Pending', k.pending, 'Pending verification'),
+    K('Eligible revenue', inr(k.revenue), 'Payments received in period, net of refunds', 1), `<div class="kpi acc"><span>Revenue target</span>${tg0}</div>`,
+    K('Achievement', k.ach == null ? '<b class="na" style="font-size:17px">Target Not Assigned</b>' : k.ach.toFixed(1) + '%', k.above ? inr(k.above) + ' above target' : ''),
+    K('Remaining target', k.remaining == null ? '—' : inr(k.remaining), k.remaining == null ? '' : 'Still to collect'), K('Outstanding balance', inr(k.outstanding), 'Unpaid on eligible admissions'),
+    K('Avg revenue / completed admission', inr(k.avg)), me.role === 'counsellor' ? '' : K('Active counsellors', k.agents, 'In your scope'), d.canInc ? K('Estimated incentive', inr(k.incentive), 'From active policy') : ''];
+  if (d.managerIncentive) kp.push(K('My team incentive', d.managerIncentive.configured ? inr(d.managerIncentive.amount) : 'Not configured', d.managerIncentive.configured ? '' : 'Manager incentive policy not configured.'));
+  const mc = d.months.filter(x => x.completed + x.cancelled + x.pending > 0 || x.target != null || x.revenue);
+  let out = `<div class="kpis">${kp.join('')}</div><div class="cg">
+    ${chartBox('Monthly revenue vs target, ' + y, 'c_rev', d.months.some(x => x.revenue || x.target != null), 'No revenue or targets for this year yet.')}
+    ${chartBox('Payment collection', 'c_col', k.revenue || k.outstanding || k.refunds, 'No payments recorded yet.')}
+    ${chartBox('Admission status', 'c_st', d.statuses.length, 'No admissions in this period.')}
+    ${me.role === 'counsellor' ? '' : chartBox(me.role === 'admin' ? 'Revenue by manager team' : 'Revenue by team leader', 'c_tm', d.teams.length, 'No revenue in this period.')}</div>
     <div class="panel"><h3>Monthly performance</h3>${mc.length ? `<div class="mgrid">${mc.map(x => `<div class="card" data-m="${x.month}"><h4>${MN[x.month - 1]} ${y}</h4>
-      <p>Completed ${x.completed} · Cancelled ${x.cancelled} · Pending ${x.pending}</p><p>Received ${inr(x.revenue)}</p><p>Target ${x.target == null ? 'not configured' : inr(x.target)}</p>
+      <p>Completed ${x.completed} · Cancelled ${x.cancelled} · Pending ${x.pending}</p><p>Received <b style="display:inline;font-size:15px">${inr(x.revenue)}</b></p><p>Target ${x.target == null ? 'Target Not Assigned' : inr(x.target)}</p>
       <p>Achievement ${pct(x.target ? x.revenue / x.target * 100 : null)}</p>${x.target ? `<div class="bar2"><i style="width:${Math.min(100, x.revenue / x.target * 100)}%"></i></div>` : ''}${d.canInc ? `<p>Est. incentive ${inr(x.incentive)}</p>` : ''}</div>`).join('')}</div>`
-      : '<div class="empty">No admissions or targets for this year yet. Add an admission to get started.</div>'}</div>`;
-  if (d.agents.length) h += `<div class="panel"><h3>Counsellor performance</h3><table><tr><th>Counsellor</th><th class="n">Completed</th><th class="n">Cancelled</th><th class="n">Revenue</th><th class="n">Target</th><th class="n">Achievement</th>${d.canInc ? '<th class="n">Rate</th><th class="n">Est. incentive</th>' : ''}</tr>
+      : '<div class="empty">No admissions, payments or targets for this year yet.</div>'}</div>`;
+  if (d.agents.length) out += `<div class="panel"><h3>Counsellor performance</h3><table><tr><th>Counsellor</th><th class="n">Completed</th><th class="n">Cancelled</th><th class="n">Revenue</th><th class="n">Target</th><th class="n">Achievement</th>${d.canInc ? '<th class="n">Rate</th><th class="n">Est. incentive</th>' : ''}</tr>
     ${d.agents.map(a => `<tr><td>${esc(a.name)}</td><td class="n">${a.completed}</td><td class="n">${a.cancelled}</td><td class="n">${inr(a.revenue)}</td><td class="n">${a.target == null ? '—' : inr(a.target)}</td><td class="n">${a.ach == null ? '—' : a.ach.toFixed(1) + '%'}</td>${d.canInc ? `<td class="n">${a.rate == null ? '—' : a.rate + '%'}</td><td class="n">${inr(a.incentive)}</td>` : ''}</tr>`).join('')}</table></div>`;
-  const tbl = (t, rows) => `<div class="panel"><h3>${t}</h3>${rows.length ? `<table><tr><th>Name</th><th class="n">Admissions</th><th class="n">Admission value</th></tr>${rows.map(r => `<tr><td>${esc(r.name)}</td><td class="n">${r.count}</td><td class="n">${inr(r.revenue)}</td></tr>`).join('')}</table>` : '<div class="empty">No completed admissions in this period.</div>'}</div>`;
-  h += `<div class="two">${tbl('By lead source', d.sources)}${tbl('By university', d.universities)}</div>`;
-  $('#body').innerHTML = h;
+  const tbl = (t, rows) => `<div class="panel"><h3>${t}</h3>${rows.length ? `<table><tr><th>Name</th><th class="n">Admissions</th><th class="n">Admission value</th></tr>${rows.map(r2 => `<tr><td>${esc(r2.name)}</td><td class="n">${r2.count}</td><td class="n">${inr(r2.revenue)}</td></tr>`).join('')}</table>` : '<div class="empty">No completed admissions in this period.</div>'}</div>`;
+  out += `<div class="two">${tbl('By lead source', d.sources)}${tbl('By university', d.universities)}</div>`;
+  $('#body').innerHTML = out;
   document.querySelectorAll('[data-m]').forEach(c => c.onclick = () => { $('#mo').value = c.dataset.m; load(); });
-  if (chart) chart.destroy();
-  chart = new Chart($('#ch'), { data: { labels: MN, datasets: [
-    { type: 'bar', label: 'Revenue', data: d.months.map(x => x.revenue), backgroundColor: '#1d5fd1' },
-    { type: 'line', label: 'Target', data: d.months.map(x => x.target), borderColor: '#e08a00', spanGaps: false }] },
-    options: { maintainAspectRatio: false, scales: { y: { ticks: { callback: v => inr(v) } } }, plugins: { tooltip: { callbacks: { label: c => c.dataset.label + ': ' + inr(c.parsed.y) } } } } });
+  mk('c_rev', { data: { labels: MN, datasets: [{ type: 'bar', label: 'Revenue received', data: d.months.map(x => x.revenue), backgroundColor: CL[0], borderRadius: 4 }, { type: 'line', label: 'Target', data: d.months.map(x => x.target), borderColor: CL[3], backgroundColor: CL[3], spanGaps: false, tension: .25 }] },
+    options: { scales: { y: { ticks: { callback: v => inr(v) } } }, plugins: { tooltip: { callbacks: { label: c => c.dataset.label + ': ' + inr(c.parsed.y) } } } } });
+  mk('c_col', { type: 'doughnut', data: { labels: ['Received (net)', 'Refunded', 'Outstanding'], datasets: [{ data: [k.revenue, k.refunds, k.outstanding], backgroundColor: [CL[2], CL[5], CL[3]], borderWidth: 0 }] }, options: { cutout: '62%', plugins: { tooltip: { callbacks: { label: c => c.label + ': ' + inr(c.parsed) } } } } });
+  mk('c_st', { type: 'doughnut', data: { labels: d.statuses.map(x => x.name), datasets: [{ data: d.statuses.map(x => x.count), backgroundColor: CL, borderWidth: 0 }] }, options: { cutout: '62%' } });
+  mk('c_tm', { type: 'bar', data: { labels: d.teams.map(x => x.name), datasets: [{ label: 'Revenue', data: d.teams.map(x => x.revenue), backgroundColor: CL[1], borderRadius: 4 }] }, options: { indexAxis: 'y', plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => inr(c.parsed.x) } } }, scales: { x: { ticks: { callback: v => inr(v) } } } } });
 }
 
 /* ---- records ---- */
@@ -427,15 +429,15 @@ let tdata = null;
 function targetsView() {
   document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === 'targets'));
   const yr = new Date().getFullYear();
-  $('#main').innerHTML = `<div class="top"><h1>Target management</h1><div><button class="btn alt" id="tcopy">Copy previous period</button> <button class="btn" id="tsave">Save targets</button></div></div>
-    <div class="bar"><select id="t_type"><option value="monthly">Monthly</option><option value="weekly">Weekly (Mon–Sun)</option></select>
+  $('#main').innerHTML = `<div class="top"><h1>Target management</h1><div><button class="btn alt" id="tdiag">Check target data</button> <button class="btn alt" id="tcopy">Copy previous period</button> <button class="btn" id="tsave">Save targets</button></div></div>
+    <div class="bar"><select id="t_type"><option value="monthly">Monthly</option><option value="weekly">Weekly (Mon–Sun)</option><option value="yearly">Yearly</option></select>
     <select id="t_year">${[yr + 1, yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('')}</select>
     <select id="t_month">${MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
     <span id="t_wk" class="bar" style="margin:0"><button class="btn alt" id="t_pw" aria-label="Previous week">‹</button><input type="date" id="t_week"><button class="btn alt" id="t_nw" aria-label="Next week">›</button></span>
     <select id="t_role"><option value="">All roles</option><option value="counsellor">Counsellors</option><option value="tl">Team Leaders</option><option value="manager">Managers</option></select></div>
     <p id="tmsg" class="err" role="alert"></p><div id="body"></div>`;
   $('#t_type').value = tg.type; $('#t_year').value = tg.year; $('#t_month').value = tg.month; $('#t_week').value = tg.week; $('#t_role').value = tg.role;
-  const sync = () => { $('#t_wk').classList.toggle('hide', tg.type !== 'weekly'); $('#t_year').classList.toggle('hide', tg.type !== 'monthly'); $('#t_month').classList.toggle('hide', tg.type !== 'monthly'); };
+  const sync = () => { $('#t_wk').classList.toggle('hide', tg.type !== 'weekly'); $('#t_year').classList.toggle('hide', tg.type === 'weekly'); $('#t_month').classList.toggle('hide', tg.type !== 'monthly'); };
   const shift = n => { const d = new Date(tg.week + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); tg.week = d.toISOString().slice(0, 10); $('#t_week').value = tg.week; loadT(); };
   $('#t_type').onchange = e => { tg.type = e.target.value; sync(); loadT(); };
   $('#t_year').onchange = e => { tg.year = +e.target.value; loadT(); }; $('#t_month').onchange = e => { tg.month = +e.target.value; loadT(); };
@@ -443,6 +445,9 @@ function targetsView() {
   $('#t_pw').onclick = () => shift(-7); $('#t_nw').onclick = () => shift(7);
   $('#t_role').onchange = e => { tg.role = e.target.value; renderT(); };
   $('#tsave').onclick = () => saveT('new'); $('#tcopy').onclick = copyT;
+  $('#tdiag').onclick = async () => { try { const d = await api('target_diag'); $('#tmsg').style.color = 'var(--mute)';
+    $('#tmsg').textContent = `Target rows: ${d.rows} (${Object.keys(d.byTypeStatus).map(k => k + ' ' + d.byTypeStatus[k]).join(', ') || 'none'}). Rows for unknown employees: ${d.rowsForUnknownEmployees}. Rows without a revenue target: ${d.rowsWithoutRevenueTarget}. Unreadable periods: ${d.unreadablePeriods}. Old Targets-tab rows: ${d.legacyTargetsTabRows}.`; }
+    catch (e) { $('#tmsg').style.color = ''; $('#tmsg').textContent = e.message; } };
   sync(); loadT();
 }
 async function loadT() {
@@ -456,7 +461,7 @@ function renderT() {
   const pc = (a, t) => up || !t ? '—' : (a / t * 100).toFixed(1) + '%';
   const status = e => !e.has ? 'Target Not Assigned' : up ? 'Upcoming' : (e.revenue_target && e.revenue >= e.revenue_target) ? 'Target Achieved' : 'In progress';
   $('#body').innerHTML = `<div class="panel"><h3>${tg.type === 'weekly' ? 'Week ' : ''}${esc(tdata.period.label)}</h3>
-    ${rows.length ? `<table><tr><th>Employee</th><th>Role</th><th>Manager</th><th>Team leader</th><th class="n">Revenue target (₹)</th><th class="n">Received</th><th class="n">Rev %</th><th class="n">Admission target</th><th class="n">Admissions</th><th class="n">Adm %</th><th>Status</th></tr>
+    ${rows.length ? `<table><tr><th>Employee</th><th>Role</th><th>Manager</th><th>Team leader</th><th class="n">Revenue target (₹)</th><th class="n">Received</th><th class="n">Rev %</th><th class="n">Admission target (optional)</th><th class="n">Admissions</th><th class="n">Adm %</th><th>Status</th></tr>
     ${rows.map(e => `<tr data-u="${esc(e.user_id)}"><td>${esc(e.name)}</td><td>${ROLE[e.role]}</td><td>${esc(e.manager_name) || '—'}</td><td>${esc(e.tl_name) || '—'}</td>
     <td class="n"><input data-f="revenue_target" type="number" min="0" step="1" style="width:130px" value="${e.revenue_target ?? ''}"></td><td class="n">${up ? '—' : inr(e.revenue)}</td><td class="n">${pc(e.revenue, e.revenue_target)}</td>
     <td class="n"><input data-f="admission_target" type="number" min="0" step="1" style="width:90px" value="${e.admission_target ?? ''}"></td><td class="n">${up ? '—' : e.admissions}</td><td class="n">${pc(e.admissions, e.admission_target)}</td><td>${status(e)}</td></tr>`).join('')}</table>`
@@ -517,87 +522,95 @@ $('#bsub').onclick = async () => {
   finally { b.disabled = false; b.textContent = 'Create users'; }
 };
 
-/* ---- Target vs Achievement board (all roles) ---- */
-const bs = { type: 'monthly', year: new Date().getFullYear(), month: new Date().getMonth() + 1, week: mondayOf(new Date().toISOString().slice(0, 10)), level: '', metric: 'adm', tab: 'live', q: '' };
+/* ---- Target vs Achievement (revenue is the default metric) ---- */
+const bs = { type: 'monthly', year: new Date().getFullYear(), month: new Date().getMonth() + 1, week: mondayOf(new Date().toISOString().slice(0, 10)), level: '', mgr: '', tl: '', metric: 'rev', tab: 'live', q: '', rank: 'rev', sort: { k: 'a', d: -1 } };
 let bd = null;
-const dshort = d => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' });
 function boardView() {
   document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === 'board'));
   const yr = new Date().getFullYear(), lv = { admin: [['manager', 'Managers'], ['tl', 'Team Leaders'], ['counsellor', 'Counsellors']], manager: [['counsellor', 'My counsellors'], ['tl', 'My team leaders'], ['manager', 'Myself']], tl: [['counsellor', 'My counsellors'], ['tl', 'Myself']], counsellor: [] }[me.role];
   if (!bs.level || !lv.some(x => x[0] === bs.level)) bs.level = lv.length ? lv[0][0] : 'counsellor';
-  $('#main').classList.add('dark');
-  $('#main').innerHTML = `<div class="dk"><div class="top"><h1>🎯 Target vs Achievement</h1><div class="bar" style="margin:0"><button class="btn ${bs.tab === 'live' ? '' : 'alt'}" id="b_live">Live</button><button class="btn ${bs.tab === 'hist' ? '' : 'alt'}" id="b_hist">History</button></div></div>
-    <div class="bar"><select id="bt"><option value="monthly">Monthly</option><option value="weekly">Weekly (Mon–Sun)</option></select>
-    <select id="by">${[yr + 1, yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('')}</select><select id="bm">${MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
-    <span id="bwk" class="bar" style="margin:0"><button class="btn alt" id="bpw" aria-label="Previous week">‹</button><input type="date" id="bw"><button class="btn alt" id="bnw" aria-label="Next week">›</button></span>
-    ${lv.length > 1 ? `<select id="bl">${lv.map(x => `<option value="${x[0]}">${x[1]}</option>`).join('')}</select>` : ''}
-    <select id="bmet"><option value="adm">Admissions</option><option value="rev">Revenue (₹)</option></select><input id="bq" placeholder="Search name…"></div>
-    <p id="bmsg" class="err" role="alert"></p><div id="bbody"></div></div>`;
+  $('#main').innerHTML = `<div class="top"><div><h1>Target vs Achievement</h1><p class="sub" id="bsub"></p></div><div class="bar" style="margin:0"><button class="btn ${bs.tab === 'live' ? '' : 'alt'}" id="b_live">Live</button><button class="btn ${bs.tab === 'hist' ? '' : 'alt'}" id="b_hist">History</button></div></div>
+    <div class="bar"><select id="bt" aria-label="Period"><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="yearly">Yearly</option></select>
+    <select id="by" aria-label="Year">${[yr + 1, yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('')}</select><select id="bm" aria-label="Month">${MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('')}</select>
+    <span id="bwk" class="bar" style="margin:0"><button class="btn alt sm" id="bpw" aria-label="Previous week">‹</button><input type="date" id="bw" aria-label="Week"><button class="btn alt sm" id="bnw" aria-label="Next week">›</button></span>
+    ${lv.length > 1 ? `<select id="bl" aria-label="Role">${lv.map(x => `<option value="${x[0]}">${x[1]}</option>`).join('')}</select>` : ''}
+    <select id="bmg" class="hide" aria-label="Manager"></select><select id="btl" class="hide" aria-label="Team leader"></select>
+    <select id="bmet" aria-label="Metric"><option value="rev">Metric: Revenue</option><option value="adm">Metric: Admissions</option></select><input id="bq" placeholder="Search employee" aria-label="Search employee"></div>
+    <p id="bmsg" class="err" role="alert"></p><div id="bbody"></div>`;
   $('#bt').value = bs.type; $('#by').value = bs.year; $('#bm').value = bs.month; $('#bw').value = bs.week; $('#bmet').value = bs.metric; $('#bq').value = bs.q; if ($('#bl')) $('#bl').value = bs.level;
-  const sync = () => { const w = bs.type === 'weekly' || false; $('#bwk').classList.toggle('hide', !(bs.tab === 'live' && w)); $('#bm').classList.toggle('hide', !(bs.tab === 'live' && !w)); $('#bt').classList.toggle('hide', bs.tab !== 'live'); };
+  const sync = () => { const L = bs.tab === 'live'; $('#bwk').classList.toggle('hide', !(L && bs.type === 'weekly')); $('#bm').classList.toggle('hide', !(L && bs.type === 'monthly')); $('#bt').classList.toggle('hide', !L); $('#by').classList.toggle('hide', L && bs.type === 'weekly'); };
   const shift = n => { const d = new Date(bs.week + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); bs.week = d.toISOString().slice(0, 10); $('#bw').value = bs.week; loadB(); };
   $('#bt').onchange = e => { bs.type = e.target.value; sync(); loadB(); }; $('#by').onchange = e => { bs.year = +e.target.value; loadB(); }; $('#bm').onchange = e => { bs.month = +e.target.value; loadB(); };
   $('#bw').onchange = e => { if (e.target.value) { bs.week = mondayOf(e.target.value); e.target.value = bs.week; loadB(); } };
   $('#bpw').onclick = () => shift(-7); $('#bnw').onclick = () => shift(7);
   if ($('#bl')) $('#bl').onchange = e => { bs.level = e.target.value; loadB(); };
+  $('#bmg').onchange = e => { bs.mgr = e.target.value; loadB(); }; $('#btl').onchange = e => { bs.tl = e.target.value; loadB(); };
   $('#bmet').onchange = e => { bs.metric = e.target.value; renderB(); };
   let tq; $('#bq').oninput = e => { bs.q = e.target.value; clearTimeout(tq); tq = setTimeout(renderB, 200); };
   $('#b_live').onclick = () => { bs.tab = 'live'; boardView(); }; $('#b_hist').onclick = () => { bs.tab = 'hist'; boardView(); };
   sync(); loadB();
 }
 async function loadB() {
-  $('#bmsg').textContent = ''; $('#bbody').innerHTML = '<div class="skel"></div>';
-  try { bd = bs.tab === 'live' ? await api('board', { period_type: bs.type, year: bs.year, month: bs.month, week_start: bs.week, level: bs.level })
-    : await api('board_history', { year: bs.year, level: bs.level }); renderB(); }
-  catch (e) { $('#bbody').innerHTML = ''; $('#bmsg').textContent = e.message; }
+  $('#bmsg').innerHTML = ''; $('#bbody').innerHTML = '<div class="kpis"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>';
+  try {
+    if (bs.tab === 'live') bd = await api('board', { period_type: bs.type, year: bs.year, month: bs.month, week_start: bs.week, level: bs.level, manager_id: bs.mgr, tl_id: bs.tl });
+    else { const [h, rv] = await Promise.all([api('board_history', { year: bs.year, level: bs.level }), api('target_revisions', { year: bs.year })]); bd = Object.assign(h, { revs: rv.rows }); }
+    if (bd.filters) fillFilters(); renderB();
+  } catch (e) { $('#bbody').innerHTML = ''; $('#bmsg').innerHTML = esc(e.message) + ' <button class="btn alt sm" id="bretry">Retry</button>'; $('#bretry').onclick = loadB; }
 }
-const spark = (v, w = 230, h = 40) => {
-  if (v.length < 2) return '<svg width="' + w + '" height="' + h + '"></svg>';
-  const c = []; v.reduce((a, x) => (c.push(a + x), a + x), 0); const mx = Math.max(...c, 1);
-  const pts = c.map((y, i) => (i / (c.length - 1) * w).toFixed(1) + ',' + (h - 3 - y / mx * (h - 8)).toFixed(1));
-  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polygon points="0,${h} ${pts.join(' ')} ${w},${h}" fill="#ffb34722"/><polyline points="${pts.join(' ')}" fill="none" stroke="#ffb347" stroke-width="2"/></svg>`;
-};
+function fillFilters() {
+  const F = bd.filters, fill = (id, list, label, cur) => { const el = $(id); if (!el) return; el.classList.toggle('hide', !list.length || (list.length < 2 && me.role !== 'admin')); el.innerHTML = `<option value="">${label}</option>` + list.map(x => `<option value="${esc(x.id)}">${esc(x.name)}</option>`).join(''); el.value = cur; };
+  fill('#bmg', F.managers, 'All managers', bs.mgr); fill('#btl', F.tls, 'All team leaders', bs.tl);
+}
+const spark = (v, w = 120, h = 30) => { if (v.length < 2) return ''; const c = []; v.reduce((a, x) => (c.push(a + x), a + x), 0); const mx = Math.max(...c, 1);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${c.map((y, i) => (i / (c.length - 1) * w).toFixed(1) + ',' + (h - 3 - y / mx * (h - 6)).toFixed(1)).join(' ')}" fill="none" stroke="var(--pri2)" stroke-width="2"/></svg>`; };
 function renderB() {
-  if (!bd) return;
-  const M = bs.metric, q = bs.q.trim().toLowerCase(), F = v => M === 'rev' ? inr(v) : Math.round(v).toLocaleString('en-IN');
-  if (bs.tab === 'hist') return renderH(F, q);
-  const P = bd.period, E = bd.entities.map(e => ({ ...e, t: M === 'rev' ? e.revenue_target : e.admission_target, a: M === 'rev' ? e.revenue : e.admissions, s: M === 'rev' ? e.series_rev : e.series_adm }));
-  const wt = E.filter(e => e.t > 0), tt = wt.reduce((s, e) => s + e.t, 0), ta = wt.reduce((s, e) => s + e.a, 0), rem = Math.max(tt - ta, 0), pc = tt ? ta / tt * 100 : null;
-  const proj = P.passed > 0 && !P.upcoming ? ta / P.passed * P.total : null, need = P.left > 0 ? rem / P.left : 0;
-  const pct = e => e.t > 0 ? e.a / e.t * 100 : null, unit = M === 'rev' ? '' : '';
-  E.sort((x, y) => (pct(y) ?? -1) - (pct(x) ?? -1) || y.a - x.a);
-  const kp = [['🎯', 'Total target', tt ? F(tt) : '—', '#fff', 'Across ' + wt.length + ' ' + (bd.level === 'tl' ? 'team leaders' : bd.level + 's')],
-    ['✅', 'Total achieved', F(ta), '#34d399', `<div class="pb"><i style="width:${Math.min(100, pc || 0)}%"></i></div>`],
-    ['📉', 'Remaining target', tt ? F(rem) : '—', '#60a5fa', tt ? (100 - Math.min(100, pc)).toFixed(1) + '% left to close' : 'Target Not Assigned'],
-    ['📈', 'Overall achievement', pc == null ? '—' : pc.toFixed(1) + '%', '#fb923c', P.left > 0 && tt && !P.upcoming ? `Needs ~${F(need)}/day · Projected end: ${F(proj ?? 0)} (${tt ? ((proj ?? 0) / tt * 100).toFixed(1) : 0}%)` : P.upcoming ? 'Upcoming period' : 'Period closed'],
-    ['🗓️', 'Days passed', P.passed, '#a78bfa', 'of ' + P.total + ' days (from ' + dshort(P.start) + ')'], ['⏳', 'Days left', P.left, '#c084fc', 'till ' + dshort(P.end) + ' ' + P.end.slice(0, 4)]];
-  const cards = E.filter(e => !q || e.name.toLowerCase().includes(q)).map((e, i) => {
-    const p = pct(e), exp = P.total ? P.passed / P.total * 100 : 0;
-    const st = p == null ? ['TARGET NOT ASSIGNED', ''] : P.upcoming ? ['UPCOMING', 'bl'] : p >= 100 ? ['TARGET ACHIEVED', 'g'] : P.passed < 3 ? ['JUST STARTED', 'bl'] : (exp && p / exp >= 0.9 ? ['ON TRACK', 'g'] : ['TARGET AT RISK', 'a']);
-    const half = Math.floor(e.s.length / 2), last = e.s.slice(-7).reduce((a, b) => a + b, 0), prev = e.s.slice(-14, -7).reduce((a, b) => a + b, 0);
-    const tr = e.s.length < 8 ? ['', ''] : last > prev ? ['📈 Trending up', 'g'] : last < prev ? ['📉 Trending down', 'r'] : ['➖ Steady', ''];
-    const ago = e.last ? Math.max(0, Math.round((new Date(P.today) - new Date(e.last)) / 864e5)) : null, left = e.t > 0 ? Math.max(e.t - e.a, 0) : null;
-    const medal = p == null ? '' : i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
-    return `<div class="ec${i === 0 && p != null ? ' top' : ''}"><div class="eh"><span class="md">${medal}</span><span class="av">${esc(e.name[0] || '?')}</span><div><b style="color:#fff">${esc(e.name)}</b><div>${i === 0 && p != null && ta > 0 ? '<span class="bd a">🏆 TOP PERFORMER</span>' : ''}<span class="bd ${st[1]}">${st[0]}</span></div>${e.manager_name || e.tl_name ? `<small style="color:var(--m)">${[e.manager_name && 'Mgr ' + esc(e.manager_name), e.tl_name && 'TL ' + esc(e.tl_name)].filter(Boolean).join(' · ')}</small>` : ''}</div></div>
-      <div class="tl3"><div><b>${e.t == null ? '—' : F(e.t)}</b><small>TARGET</small></div><div><b class="g" style="color:#34d399">${P.upcoming ? '—' : F(e.a)}</b><small>ACHIEVED</small></div><div><b class="bl">${left == null ? '—' : F(left)}</b><small>REMAINING</small></div></div>
-      <div class="pr"><span>Target Progress</span><b style="color:#fbbf24">${p == null ? '—' : p.toFixed(1) + '%'}</b></div><div class="pb"><i style="width:${Math.min(100, p || 0)}%"></i></div>
-      <div class="ft">${p == null ? 'Target Not Assigned' : P.upcoming ? 'Upcoming' : left === 0 ? '🎉 Target achieved' + (e.a > e.t ? ' · ' + F(e.a - e.t) + ' above' : '') : P.left > 0 ? `🗓️ Needs ~<b style="color:#fbbf24">${F(left / P.left)}</b>/day to hit target` : 'Period closed'}</div>
-      <div class="sp"><span>${e.s.length > 1 ? spark(e.s) : '<small style="color:var(--m)">No activity yet</small>'}</span><b class="${tr[1]}" style="font-size:12px">${tr[0]}</b></div>
-      <div class="ft">🔥 Active ${e.active_days}/${Math.max(e.s.length, 0)} days tracked</div><div class="ft2">${ago == null ? 'No activity yet' : ago === 0 ? 'Updated today' : 'Updated ' + ago + 'd ago'}</div></div>`;
-  });
-  $('#bbody').innerHTML = `<div class="kp">${kp.map(k => `<div class="k"><span style="font-size:22px">${k[0]}</span><small>${k[1]}</small><b style="color:${k[3]}">${k[2]}</b><p>${k[4]}</p></div>`).join('')}</div>
-    <h3 style="margin:0 0 12px">🏆 Live Leaderboard <span class="bd a">Auto-ranked</span></h3>${cards.length ? `<div class="lb">${cards.join('')}</div>` : '<div class="panel empty">Nobody matches. Assign targets in Target management, or clear the search.</div>'}
-    <p style="color:var(--m);font-size:12px;margin-top:14px">Rules: ${M === 'rev' ? 'revenue = payments received in the period' : 'admissions = eligible admissions dated in the period'}. At risk = pace below 90% of the time elapsed (after the first 3 days). Needs/day = remaining ÷ days left. Weekly and monthly targets are tracked separately.</p>`;
+  if (!bd) return; if (bs.tab === 'hist') return renderH();
+  const P = bd.period, isR = bs.metric === 'rev', q = bs.q.trim().toLowerCase(), F = v => isR ? inr(v) : Math.round(v).toLocaleString('en-IN');
+  $('#bsub').textContent = (P.type === 'weekly' ? 'Week ' : P.type === 'yearly' ? 'Year ' : '') + P.label + ' · ' + (isR ? 'Revenue received (₹)' : 'Eligible admissions') + (P.upcoming ? ' · upcoming' : '');
+  const E = bd.entities.map(e => ({ ...e, t: isR ? e.revenue_target : e.admission_target, a: isR ? e.revenue : e.admissions })).filter(e => !q || e.name.toLowerCase().includes(q));
+  const hasT = e => e.t != null && e.t > 0, wt = E.filter(hasT), sum = (l, k) => l.reduce((s, e) => s + e[k], 0);
+  const T = sum(wt, 't'), Aw = sum(wt, 'a'), Aall = sum(E, 'a'), pc = T ? Aw / T * 100 : null, exp = P.upcoming || !P.total ? 0 : Math.min(1, P.passed / P.total);
+  const stt = e => { if (!hasT(e)) return ['Target Not Assigned', 'mute']; if (P.upcoming) return ['Upcoming', 'info']; const p = e.a / e.t; if (p > 1) return ['Above Target', 'ok']; if (p >= 1) return ['Target Achieved', 'ok'];
+    if (e.a <= 0 && exp < .15) return ['Not Started', 'mute']; if (P.left === 0) return ['Target Missed', 'bad']; if (exp < .15) return ['On Track', 'info']; return p / exp >= .9 ? ['On Track', 'info'] : ['Behind Target', 'warn']; };
+  const K = (l, v, s) => `<div class="kpi acc"><span>${l}</span><b>${v}</b><p>${s || ''}</p></div>`, NA = '<b class="na" style="font-size:17px">Target Not Assigned</b>';
+  const rows = E.map(e => ({ ...e, rem: hasT(e) ? Math.max(e.t - e.a, 0) : null, pct: hasT(e) ? e.a / e.t * 100 : null, above: hasT(e) ? Math.max(e.a - e.t, 0) : null, share: Aall ? e.a / Aall * 100 : null, st: stt(e) }));
+  const rank = rows.slice().sort((x, y) => bs.rank === 'pct' ? (y.pct ?? -1) - (x.pct ?? -1) : y.a - x.a);
+  const val = (r, k) => k === 'st' ? r.st[0] : r[k] ?? -1, S = bs.sort;
+  const tbl = rows.slice().sort((x, y) => { const a = val(x, S.k), b = val(y, S.k); return (typeof a === 'string' ? a.localeCompare(b) : a - b) * S.d; });
+  const cols = [['name', 'Employee'], ['role', 'Role'], ['manager_name', 'Manager'], ['tl_name', 'Team leader'], ['t', 'Target', 1], ['a', 'Actual', 1], ['rem', 'Remaining', 1], ['pct', 'Achieved', 1], ['above', 'Above target', 1], ['share', 'Share of total', 1], ['st', 'Status']];
+  const inc = isR && bd.canInc && rows.some(r => r.incentive != null); if (inc) cols.push(['incentive', 'Est. incentive', 1]);
+  const cell = (r, k) => k === 'name' ? `<b>${esc(r.name)}</b>` : k === 'role' ? ROLE[r.role] : k === 'st' ? `<span class="bdg ${r.st[1]}">${r.st[0]}</span>` : ['manager_name', 'tl_name'].includes(k) ? esc(r[k]) || '—'
+    : k === 'pct' || k === 'share' ? (r[k] == null ? '—' : r[k].toFixed(1) + '%') : (r[k] == null ? '—' : F(r[k]));
+  $('#bbody').innerHTML = `<div class="kpis">${K('Total revenue target', T ? F(T) : NA, T ? 'Assigned to ' + wt.length + ' of ' + E.length + ' employees' : 'Assign targets in Target management')}
+    ${K(isR ? 'Actual revenue achieved' : 'Actual admissions', F(Aall), Aall !== Aw ? 'Includes ' + F(Aall - Aw) + ' from employees without a target' : 'Eligible, authorized scope')}
+    ${K('Remaining target', T ? F(Math.max(T - Aw, 0)) : '—', T ? 'Target − actual (assigned employees)' : '')}${K('Achievement', pc == null ? NA : pc.toFixed(1) + '%', 'Total actual ÷ total target')}
+    ${K('Revenue above target', T ? F(Math.max(Aw - T, 0)) : '—', '')}${K('Employees with targets', wt.length + ' / ' + E.length, E.length - wt.length ? E.length - wt.length + ' without a target' : 'All assigned')}</div>
+    ${T ? `<div class="panel"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><b>${F(Aw)} of ${F(T)}</b><b>${pc.toFixed(1)}%</b></div><div class="pg"><i class="${pc >= 100 ? 'ok' : ''}" style="width:${Math.min(100, pc)}%"></i>${exp && exp < 1 ? `<u style="left:${exp * 100}%" title="Time elapsed"></u>` : ''}</div><p class="sub">${P.upcoming ? 'Upcoming period' : P.left > 0 ? P.left + ' days left · marker shows time elapsed (' + (exp * 100).toFixed(0) + '%)' : 'Period closed'}</p></div>` : ''}
+    ${isR ? `<div class="panel"><h3>${bd.trend.kind === 'daily' ? 'Revenue received by day' : 'Monthly revenue: target vs actual, ' + P.start.slice(0, 4)}</h3>${bd.trend.points.some(p => p.actual || p.target != null) ? '<div class="cv"><canvas id="c_bt"></canvas></div>' : '<div class="empty">No revenue or targets in this range.</div>'}</div>` : ''}
+    <div class="panel"><div class="top" style="margin-bottom:6px"><h3 style="margin:0">Leaderboard · ranked by ${bs.rank === 'pct' ? 'achievement %' : isR ? 'revenue achieved' : 'admissions'}</h3><select id="brk" aria-label="Ranking metric"><option value="rev">Rank by ${isR ? 'revenue achieved' : 'admissions'}</option><option value="pct">Rank by achievement %</option></select></div>
+    ${rank.length ? rank.slice(0, 12).map((r, i) => `<div class="rk${i === 0 && r.a > 0 ? ' first' : ''}"><span class="no">${i + 1}</span><div><b>${esc(r.name)}</b><small>${ROLE[r.role]}${r.manager_name ? ' · ' + esc(r.manager_name) : ''}</small></div>
+      <div><div class="pg"><i class="${r.pct >= 100 ? 'ok' : ''}" style="width:${Math.min(100, r.pct || 0)}%"></i></div><small>${F(r.a)} of ${r.t == null ? 'Target Not Assigned' : F(r.t)}${r.pct != null ? ' · ' + r.pct.toFixed(1) + '%' : ''}</small></div>
+      <div style="text-align:right"><span class="bdg ${r.st[1]}">${r.st[0]}</span><div>${spark(isR ? r.series_rev : r.series_adm)}</div></div></div>`).join('') : '<div class="empty">No employees match. Clear filters or assign targets.</div>'}</div>
+    <div class="panel"><h3>Detailed performance</h3>${tbl.length ? `<table><thead><tr>${cols.map(c => `<th data-k="${c[0]}" class="${c[2] ? 'n' : ''}" aria-sort="${S.k === c[0] ? (S.d > 0 ? 'ascending' : 'descending') : 'none'}">${c[1]}${S.k === c[0] ? (S.d > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead>
+      <tbody>${tbl.map(r => `<tr>${cols.map(c => `<td class="${c[2] ? 'n' : ''}">${cell(r, c[0])}</td>`).join('')}</tr>`).join('')}</tbody></table>` : '<div class="empty">Nothing to show.</div>'}
+      <p class="sub" style="margin-top:10px">${isR ? 'Revenue = eligible payments received in the period, net of refunds.' : 'Admissions = eligible admissions dated in the period.'} Achievement = actual ÷ target; totals use total actual ÷ total target, not an average of percentages. Behind Target applies once 15% of the period has passed and pace is under 90% of time elapsed; Target Missed applies only after the period closes.</p></div>`;
+  $('#brk').value = bs.rank; $('#brk').onchange = e => { bs.rank = e.target.value; renderB(); };
+  document.querySelectorAll('th[data-k]').forEach(th => th.onclick = () => { bs.sort = { k: th.dataset.k, d: S.k === th.dataset.k ? -S.d : -1 }; renderB(); });
+  if (isR && $('#c_bt')) { const pts = bd.trend.points; mk('c_bt', { data: { labels: pts.map(p => p.label), datasets: [{ type: 'bar', label: 'Actual', data: pts.map(p => p.actual), backgroundColor: CL[0], borderRadius: 4 }].concat(bd.trend.kind === 'monthly' ? [{ type: 'line', label: 'Target', data: pts.map(p => p.target), borderColor: CL[3], backgroundColor: CL[3], spanGaps: false, tension: .25 }] : []) },
+    options: { scales: { y: { ticks: { callback: v => inr(v) } } }, plugins: { tooltip: { callbacks: { label: c => c.dataset.label + ': ' + inr(c.parsed.y) } } } } }); }
 }
-function renderH(F, q) {
-  const M = bs.metric, cl = (a, t) => t > 0 ? (a / t >= 1 ? 'g' : a / t >= 0.7 ? 'a' : 'r') : '';
+function renderH() {
+  const isR = bs.metric === 'rev', q = bs.q.trim().toLowerCase(), F = v => isR ? inr(v) : Math.round(v).toLocaleString('en-IN'), cl = (a, t) => t > 0 ? (a / t >= 1 ? 'ok' : a / t >= .7 ? 'warn' : 'bad') : 'mute';
+  $('#bsub').textContent = bs.year + ' history · ' + (isR ? 'Revenue received (₹)' : 'Eligible admissions') + ' · each month vs the target saved for that month';
   const rows = bd.entities.filter(e => !q || e.name.toLowerCase().includes(q)).map(e => {
-    const T = e.months.reduce((s, m) => s + (M === 'rev' ? m.rt : m.at) || 0, 0), A = e.months.reduce((s, m) => s + (M === 'rev' ? m.rev : m.adm), 0);
-    return `<tr><td style="position:sticky;left:0;background:var(--c)"><b>${esc(e.name)}</b></td>${e.months.map(m => { const t = M === 'rev' ? m.rt : m.at, a = M === 'rev' ? m.rev : m.adm;
-      return `<td class="hc"><b class="${cl(a, t)}">${t > 0 ? (a / t * 100).toFixed(0) + '%' : '—'}</b><small>${F(a)} / ${t == null ? '—' : F(t)}</small></td>`; }).join('')}
-      <td class="hc"><b class="${cl(A, T)}">${T > 0 ? (A / T * 100).toFixed(0) + '%' : '—'}</b><small>${F(A)} / ${T ? F(T) : '—'}</small></td></tr>`; });
-  $('#bbody').innerHTML = `<div class="panel"><h3>${bs.year} month-by-month: achieved / target</h3>${rows.length ? `<table><tr><th></th>${MN.map(m => `<th class="hc">${m}</th>`).join('')}<th class="hc">Year</th></tr>${rows.join('')}</table>` : '<div class="empty">No people at this level.</div>'}
-    <p style="color:var(--m);font-size:12px">Green = target met · amber = 70%+ · red = below 70% · “—” = Target Not Assigned. Each month is measured against the target saved for that month.</p></div>`;
+    const Tm = e.months.reduce((s, m) => s + ((isR ? m.rt : m.at) || 0), 0), T = isR && e.yt != null ? e.yt : Tm, A = e.months.reduce((s, m) => s + (isR ? m.rev : m.adm), 0);
+    return `<tr><td><b>${esc(e.name)}</b></td>${e.months.map(m => { const t = isR ? m.rt : m.at, a = isR ? m.rev : m.adm; return `<td class="n"><span class="bdg ${cl(a, t)}">${t > 0 ? (a / t * 100).toFixed(0) + '%' : '—'}</span><br><small class="sub">${F(a)} / ${t == null ? '—' : F(t)}</small></td>`; }).join('')}
+      <td class="n"><span class="bdg ${cl(A, T)}">${T > 0 ? (A / T * 100).toFixed(0) + '%' : '—'}</span><br><small class="sub">${F(A)} / ${T ? F(T) : '—'}</small></td></tr>`; });
+  const rv = bd.revs || [], chg = r => r.kind === 'Created' ? 'Set to ' + (r.value === '' ? '—' : inr(r.value)) : (r.field === 'revenue_target' ? 'Revenue ' : 'Admissions ') + (r.old === '' ? '—' : r.field === 'revenue_target' ? inr(r.old) : r.old) + ' → ' + (r.value === '' ? '—' : r.field === 'revenue_target' ? inr(r.value) : r.value);
+  $('#bbody').innerHTML = `<div class="panel"><h3>Month-by-month achievement</h3>${rows.length ? `<table><tr><th>Employee</th>${MN.map(m => `<th class="n">${m}</th>`).join('')}<th class="n">Year</th></tr>${rows.join('')}</table>` : '<div class="empty">No employees at this level.</div>'}
+    <p class="sub" style="margin-top:8px">Green = target met · amber = 70% or more · red = below 70% · “—” = Target Not Assigned. Year uses the yearly target when one is assigned, otherwise the sum of monthly targets.</p></div>
+    <div class="panel"><h3>Target history (${bs.year})</h3>${rv.length ? `<table><tr><th>When</th><th>Employee</th><th>Period</th><th>Change</th><th>By</th><th>Reason</th></tr>${rv.map(r => `<tr><td>${esc(r.ts.replace('T', ' ').slice(0, 16))}</td><td>${esc(r.employee)}</td><td>${esc(r.period)}</td><td>${esc(chg(r))}</td><td>${esc(r.by)}</td><td>${esc(r.reason) || '—'}</td></tr>`).join('')}</table>` : '<div class="empty">No target changes recorded for this year.</div>'}</div>`;
 }
 </script>
 </body>
