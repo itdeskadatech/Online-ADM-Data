@@ -47,6 +47,11 @@ td.n,th.n{text-align:right}th[data-k]{cursor:pointer}th[data-k]:hover{color:var(
 dialog{border:0;border-radius:16px;padding:0;width:min(780px,96vw);max-height:92vh;background:var(--sf);color:var(--ink)}dialog::backdrop{background:#050a14a8}
 dialog form{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
 .fg .full{grid-column:1/-1}.req::after{content:" *";color:var(--bad)}.err{color:var(--bad);margin:10px 0 0}.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+h4.sec{grid-column:1/-1;margin:10px 0 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--pri);border-bottom:1px solid var(--line);padding-bottom:6px}
+.fe{color:var(--bad);font-size:12px;min-height:0}.fe:empty{display:none}.invalid{border-color:var(--bad)!important}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;background:var(--sf2);border:1px solid var(--line);border-radius:12px;padding:12px}.calc div small{display:block;color:var(--mute);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}.calc b{font-size:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}details.panel summary{cursor:pointer;font-weight:500}.fl{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mute)}
+.ps{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}.ps div{background:var(--sf2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.ps small{display:block;color:var(--mute);font-size:11.5px;text-transform:uppercase}.ps b{font-size:18px}
 #toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;z-index:9;box-shadow:var(--sh)}
 @media(max-width:900px){#app{grid-template-columns:1fr}nav{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px}nav h2{margin:0 8px 0 0}.who{display:none}main{padding:16px 14px}.two,.fg{grid-template-columns:1fr}.rk{grid-template-columns:28px 1fr}.rk>:nth-child(3),.rk>:nth-child(4){grid-column:2}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -81,18 +86,19 @@ dialog form{padding:20px}.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px
   <p class="err" id="ferr"></p>
   <div class="acts"><button type="button" class="btn alt" id="clr">Clear</button><button type="button" class="btn alt" id="cancel">Cancel</button><button class="btn" id="sub">Save admission</button></div>
 </form></dialog>
-<dialog id="pydlg"><div style="padding:20px"><h1 id="pytitle"></h1><p id="pysum" style="color:var(--mute)"></p>
-  <div style="overflow-x:auto"><table><tr><th>Received on</th><th>Type</th><th class="n">Amount</th><th>Method</th><th>Reference</th><th>Status</th><th></th></tr><tbody id="pyrows"></tbody></table></div>
-  <form id="pyform" class="fg" style="margin-top:14px" novalidate>
-    <label><span class="req">Amount (₹)</span><input id="py_amount" type="number" min="0" step="0.01"></label>
-    <label><span class="req">Actual received date</span><input id="py_date" type="date"></label>
-    <label><span>Type</span><select id="py_kind"><option value="payment">Payment</option><option value="refund">Refund</option></select></label>
-    <label><span>Status</span><select id="py_status"><option>Received</option><option>Pending</option><option>Failed</option></select></label>
-    <label><span>Method</span><select id="py_method"><option>UPI</option><option>Bank Transfer</option><option>Cash</option><option>Card</option><option>Cheque</option><option>Online</option></select></label>
+<dialog id="pydlg"><div style="padding:20px"><h1 id="pytitle"></h1><p class="sub" id="pysub"></p><div class="ps" id="pysum"></div>
+  <div style="overflow-x:auto"><table><tr><th>Received on</th><th>Type</th><th class="n">Amount</th><th>Method</th><th>Reference</th><th>Status</th><th>Recorded by</th><th></th></tr><tbody id="pyrows"></tbody></table></div>
+  <h3 style="margin:16px 0 8px">Add payment</h3>
+  <form id="pyform" class="fg" novalidate>
+    <label><span class="req">Amount received (₹)</span><input id="py_amount" type="number" min="0" step="0.01" inputmode="decimal"></label>
+    <label><span class="req">Actual payment date</span><input id="py_date" type="date"></label>
+    <label><span class="req">Payment method</span><select id="py_method"></select></label>
     <label><span>Transaction reference</span><input id="py_ref"></label>
-    <label><span>Next expected payment</span><input id="py_next" type="date"></label>
+    <label><span>Next payment due date</span><input id="py_next" type="date"></label>
     <label><span>Remarks</span><input id="py_rem" maxlength="300"></label>
-    <div class="full acts" style="grid-column:1/-1"><button class="btn" id="pysub">Record</button></div>
+    <label id="py_kw" class="hide"><span>Type</span><select id="py_kind"><option value="payment">Payment</option><option value="refund">Refund</option></select></label>
+    <label id="py_sw" class="hide"><span>Status</span><select id="py_status"><option>Received</option><option>Pending</option><option>Failed</option></select></label>
+    <div class="full acts" style="grid-column:1/-1"><button class="btn" id="pysub2">Add payment</button></div>
   </form><p class="err" id="pyerr"></p><div class="acts"><button class="btn alt" id="pyclose">Close</button></div></div></dialog>
 <dialog id="pdlg"><form id="pfrm" novalidate>
   <h1 style="margin-bottom:6px">Change password</h1><p id="pnote" style="color:var(--mute);margin:0 0 14px"></p>
@@ -132,7 +138,7 @@ const CFG = { API: 'https://script.google.com/macros/s/AKfycbwo_QzcQ_Z7g3eUf-_-b
 /* ====================================== */
 const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const ROLE = { admin: 'Admin', manager: 'Manager', tl: 'Team Leader', counsellor: 'Counsellor' };
-let pubC = [], codeReq = false, token = null, me = null, opts = {}, counsellors = [], view = 'overview', chart = null, idem = null, rp = 1;
+let people = { managers: [], tls: [] }, pubC = [], codeReq = false, token = null, me = null, opts = {}, counsellors = [], view = 'overview', chart = null, idem = null, rp = 1;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const inr = n => n == null ? '—' : '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 0 });
@@ -174,7 +180,7 @@ $('#lf').onsubmit = async e => {
 async function boot() {
   try {
     const b = await api('bootstrap');
-    me = b.user; opts = b.opts; counsellors = b.counsellors;
+    me = b.user; opts = b.opts; counsellors = b.counsellors; people = b.people || people;
     $('#login').classList.add('hide'); $('#app').classList.remove('hide');
     $('#nu').classList.toggle('hide', me.role !== 'admin'); $('#nt').classList.toggle('hide', me.role !== 'admin');
     $('#who').innerHTML = `<span class="av">${esc((me.name || '?')[0].toUpperCase())}</span><span><b>${esc(me.name)}</b><br><small>${ROLE[me.role]}</small></span>`;
@@ -196,7 +202,7 @@ function go(v) {
   document.querySelectorAll('nav [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   const canAdd = true;   // all roles can add admissions; the server limits which counsellors each role may pick
   const yr = new Date().getFullYear();
-  const yopts = [yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('');
+  const yopts = (v === 'records' ? '<option value="">All years</option>' : '') + [yr, yr - 1, yr - 2].map(y => `<option>${y}</option>`).join('');
   const mopts = '<option value="">All months</option>' + MN.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
   $('#main').innerHTML = `<div class="top"><h1>${v === 'overview' ? ROLE[me.role] + ' overview' : 'Admission records'}</h1>
     ${canAdd ? '<button class="btn" id="add">+ Add admission</button>' : ''}</div>
@@ -206,6 +212,7 @@ function go(v) {
   if (canAdd) $('#add').onclick = openForm;
   ['yr', 'mo', 'st'].forEach(i => $('#' + i) && ($('#' + i).onchange = () => { rp = 1; load(); }));
   $('#rf').onclick = load;
+  if (v === 'records') buildRecFilters();
   if ($('#q')) { let t; $('#q').oninput = () => { clearTimeout(t); t = setTimeout(() => { rp = 1; load(); }, 350); }; }
   load();
 }
@@ -230,7 +237,9 @@ async function overview() {
   const kp = [K('Total admissions', k.total, 'Created in period'), K('Completed', k.completed, 'Eligible status'), K('Cancelled', k.cancelled), K('Pending', k.pending, 'Pending verification'),
     K('Eligible revenue', inr(k.revenue), 'Payments received in period, net of refunds', 1), `<div class="kpi acc"><span>Revenue target</span>${tg0}</div>`,
     K('Achievement', k.ach == null ? '<b class="na" style="font-size:17px">Target Not Assigned</b>' : k.ach.toFixed(1) + '%', k.above ? inr(k.above) + ' above target' : ''),
-    K('Remaining target', k.remaining == null ? '—' : inr(k.remaining), k.remaining == null ? '' : 'Still to collect'), K('Outstanding balance', inr(k.outstanding), 'Unpaid on eligible admissions'),
+    K('Remaining target', k.remaining == null ? '—' : inr(k.remaining), k.remaining == null ? '' : 'Still to collect'), K('Total course fees', inr(k.feesTotal), 'Eligible admissions in period'), K('Payments this month', inr(k.payMonth), 'Received this calendar month'), K('Payments this year', inr(k.payYear), 'Received this calendar year'),
+    K('Gross collections', inr(k.gross), 'Refunds ' + inr(k.refunds)), K('Outstanding balance', inr(k.outstanding), 'Course fees minus payments received'), K('Pending collections', inr(k.pendingCollections), 'Not yet due'),
+    K('Overdue collections', inr(k.overdue), k.overdueCount + ' admissions past due date'), K('Fully paid', k.paidCount, 'admissions'), K('Partially paid', k.partialCount, 'admissions'), K('No payment yet', k.noPaymentCount, 'admissions'),
     K('Avg revenue / completed admission', inr(k.avg)), me.role === 'counsellor' ? '' : K('Active counsellors', k.agents, 'In your scope'), d.canInc ? K('Estimated incentive', inr(k.incentive), 'From active policy') : ''];
   if (d.managerIncentive) kp.push(K('My team incentive', d.managerIncentive.configured ? inr(d.managerIncentive.amount) : 'Not configured', d.managerIncentive.configured ? '' : 'Manager incentive policy not configured.'));
   const mc = d.months.filter(x => x.completed + x.cancelled + x.pending > 0 || x.target != null || x.revenue);
@@ -257,12 +266,35 @@ async function overview() {
 }
 
 /* ---- records ---- */
+const rf0 = { quick: 'all', pay_status: '', overdue: false, bal_min: '', bal_max: '', pay_from: '', pay_to: '', due_from: '', due_to: '', method: '', university: '', course: '', counsellor_id: '', manager_id: '', tl_id: '', date_from: '', date_to: '', sort: 'date' };
+let rf = { ...rf0 };
+const QUICK = [['all', 'All admissions', {}], ['paid', 'Fully paid', { pay_status: 'Paid' }], ['partial', 'Partially paid', { pay_status: 'Partially Paid' }], ['pending', 'Payment pending', { pay_status: 'Pending' }], ['overdue', 'Overdue payments', { overdue: true }], ['remaining', 'Fees remaining', { bal_min: '0.01' }]];
+function buildRecFilters() {
+  const old = $('#rfbox'); if (old) old.remove();
+  const o = a => (a || []).map(x => ({ v: x, t: x })), sel = (id, lab, list) => `<select id="${id}" aria-label="${lab}"><option value="">${lab}</option>${list.map(x => `<option value="${esc(x.v)}"${x.v === rf[id.slice(3)] ? ' selected' : ''}>${esc(x.t)}</option>`).join('')}</select>`;
+  const fl = (id, lab, t = 'date') => `<label class="fl">${lab}<input id="rf_${id}" type="${t}" value="${esc(rf[id])}"${t === 'number' ? ' min="0" step="1"' : ''}></label>`;
+  $('#body').insertAdjacentHTML('beforebegin', `<div id="rfbox"><div class="chips">${QUICK.map(q => `<button class="btn sm ${rf.quick === q[0] ? '' : 'alt'}" data-q="${q[0]}">${q[1]}</button>`).join('')}</div>
+    <details class="panel"${Object.keys(rf).some(k => !['quick', 'sort'].includes(k) && rf[k] && rf[k] !== rf0[k]) ? ' open' : ''}><summary>More filters</summary><div class="bar" style="margin-top:12px">
+    ${sel('rf_pay_status', 'Payment status', o(['Paid', 'Partially Paid', 'Pending']))}${sel('rf_method', 'Payment method', o(opts.method))}${sel('rf_university', 'University', o(opts.university))}${sel('rf_course', 'Course', o(opts.course))}
+    ${counsellors.length ? sel('rf_counsellor_id', 'Counsellor', counsellors.map(c => ({ v: c.id, t: c.name }))) : ''}${people.managers.length > 1 || me.role === 'admin' ? sel('rf_manager_id', 'Manager', people.managers.map(c => ({ v: c.id, t: c.name }))) : ''}${people.tls.length > 1 || me.role === 'admin' ? sel('rf_tl_id', 'Team leader', people.tls.map(c => ({ v: c.id, t: c.name }))) : ''}
+    ${fl('bal_min', 'Balance from (₹)', 'number')}${fl('bal_max', 'Balance to (₹)', 'number')}${fl('date_from', 'Admission from')}${fl('date_to', 'Admission to')}${fl('pay_from', 'Payment received from')}${fl('pay_to', 'Payment received to')}${fl('due_from', 'Next due from')}${fl('due_to', 'Next due to')}
+    <select id="rf_sort" aria-label="Sort"><option value="date">Sort: newest first</option><option value="balance">Sort: outstanding balance (high to low)</option><option value="due">Sort: next due date (soonest)</option></select>
+    <button class="btn alt sm" id="rf_clear">Clear filters</button></div></details></div>`);
+  $('#rf_sort').value = rf.sort;
+  document.querySelectorAll('#rfbox [data-q]').forEach(b => b.onclick = () => { const q = QUICK.find(x => x[0] === b.dataset.q); rf = { ...rf0, ...q[2], quick: q[0], sort: rf.sort }; rp = 1; buildRecFilters(); load(); });
+  $('#rf_clear').onclick = () => { rf = { ...rf0 }; $('#q').value = ''; $('#st').value = ''; rp = 1; buildRecFilters(); load(); };
+  $('#rfbox').addEventListener('change', e => { if (!e.target.id || !e.target.id.startsWith('rf_') || e.target.id === 'rf_clear') return; rf[e.target.id.slice(3)] = e.target.value; rf.quick = ''; rf.overdue = false; rp = 1; load(); });
+}
 async function records() {
-  const d = await api('records', { year: +$('#yr').value, month: $('#mo').value || null, q: $('#q').value, status: $('#st').value, page: rp });
+  const prm = { year: $('#yr').value ? +$('#yr').value : null, month: $('#mo').value || null, q: $('#q').value, status: $('#st').value, page: rp };
+  Object.keys(rf).forEach(k => { if (k !== 'quick' && rf[k] !== '' && rf[k] !== false) prm[k] = rf[k]; });
+  const d = await api('records', prm);
   if (!d.rows.length) { $('#body').innerHTML = '<div class="panel empty">No admission records match these filters.</div>'; return; }
   const st = r => me.role === 'admin' ? `<select data-id="${esc(r.record_id)}">${opts.status.map(s => `<option${s === r.status ? ' selected' : ''}>${esc(s)}</option>`).join('')}</select>` : esc(r.status);
-  $('#body').innerHTML = `<div class="panel"><table><tr><th>Date</th><th>Application no.</th><th>Candidate</th><th>Course</th><th>University</th><th>Counsellor</th><th>Status</th><th class="n">Value</th><th class="n">Received</th><th class="n">Balance</th><th></th></tr>
-    ${d.rows.map(r => `<tr><td>${esc(r.done_date)}</td><td>${esc(r.app_no)}</td><td>${esc(r.candidate)}</td><td>${esc(r.course)}</td><td>${esc(r.university)}</td><td>${esc(r.counsellor)}</td><td>${st(r)}</td><td class="n">${inr(r.revenue)}</td><td class="n">${inr(r.received)}</td><td class="n">${inr(r.balance)}</td><td><button class="btn alt" data-p="${esc(r.record_id)}">Payments</button></td></tr>`).join('')}</table>
+  const pb = r => `<span class="bdg ${r.pay_status === 'Paid' ? 'ok' : r.pay_status === 'Partially Paid' ? 'warn' : 'mute'}">${r.pay_status}</span>${r.overdue ? ' <span class="bdg bad">Overdue</span>' : ''}${r.needs_reconciliation ? ' <span class="bdg info" title="Marked paid in old data but no payment history exists">Needs reconciliation</span>' : ''}`;
+  $('#body').innerHTML = `<div class="panel"><p class="sub" style="margin:0 0 10px">Filtered totals · Course fees <b>${inr(d.sums.fees)}</b> · Received <b>${inr(d.sums.received)}</b> · Outstanding <b>${inr(d.sums.outstanding)}</b></p>
+    <table><tr><th>Date</th><th>Application no.</th><th>Candidate</th><th>Course</th><th>University</th><th>Counsellor</th><th>Status</th><th class="n">Course fees</th><th class="n">Received</th><th class="n">Outstanding</th><th>Payment</th><th>Next due</th><th></th></tr>
+    ${d.rows.map(r => `<tr><td>${esc(r.done_date)}</td><td>${esc(r.app_no)}</td><td>${esc(r.candidate)}</td><td>${esc(r.course)}</td><td>${esc(r.university)}</td><td>${esc(r.counsellor)}</td><td>${st(r)}</td><td class="n">${inr(r.revenue)}</td><td class="n">${inr(r.received)}</td><td class="n"><b style="color:${r.balance > 0 ? (r.overdue ? 'var(--bad)' : 'var(--warn)') : 'var(--ok)'}">${inr(r.balance)}</b></td><td>${pb(r)}</td><td style="color:${r.overdue ? 'var(--bad)' : 'inherit'}">${esc(r.next_due) || '—'}</td><td><button class="btn alt sm" data-p="${esc(r.record_id)}">Payments</button></td></tr>`).join('')}</table>
     <div class="acts" style="align-items:center"><span style="margin-right:auto;color:var(--mute)">${d.total} records · page ${d.page} of ${d.pages}</span>
     <button class="btn alt" id="pv" ${d.page <= 1 ? 'disabled' : ''}>Previous</button><button class="btn alt" id="nx" ${d.page >= d.pages ? 'disabled' : ''}>Next</button></div></div>`;
   $('#pv').onclick = () => { rp--; load(); }; $('#nx').onclick = () => { rp++; load(); };
@@ -273,45 +305,60 @@ async function records() {
 }
 
 /* ---- admission form ---- */
-const FIELDS = [['process', 'Process', 'select'], ['done_date', 'Admission done date', 'date'], ['app_no', 'Application number', 'text'], ['candidate', 'Candidate name', 'text'],
-  ['phone', 'Contact number', 'tel'], ['campus', 'Campus', 'select'], ['course', 'Course selected', 'select'], ['status', 'Admission status', 'select'],
-  ['source', 'Lead source', 'select'], ['university', 'University name', 'select'], ['revenue', 'Total admission value (₹)', 'number'], ['pay_status', 'Payment status', 'select'],
-  ['pay_ref', 'Payment reference', 'text', true], ['remarks', 'Remarks', 'textarea', true]];
+const FSPEC = [['sec', 'A. Admission details'], ['process', 'Process', 'select', 1, 'process'], ['done_date', 'Admission done date', 'date', 1], ['app_no', 'Application number', 'text', 1], ['candidate', 'Candidate name', 'text', 1],
+  ['phone', 'Contact number', 'tel', 1], ['campus', 'Campus', 'select', 1, 'campus'], ['course', 'Course selected', 'select', 1, 'course'], ['status', 'Admission status', 'select', 1, 'status'],
+  ['source', 'Lead source', 'select', 1, 'source'], ['university', 'University name', 'select', 1, 'university'],
+  ['sec', 'B. Course fees and initial payment'], ['revenue', 'Total Course Fees (₹)', 'number', 1], ['fees_paid', 'Fees Paid (₹)', 'number', 1], ['payment_date', 'Payment date', 'date', 0], ['payment_method', 'Payment method', 'select', 0, 'method'],
+  ['pay_ref', 'Payment reference', 'text', 0], ['calc'], ['sec', 'C. Payment schedule and remarks'], ['next_due_date', 'Next payment due date', 'date', 0], ['remarks', 'Remarks', 'textarea', 0]];
+const touched = new Set(); let showAll = false;
+const fv = k => { const e = $('#f_' + k); return e ? String(e.value).trim() : ''; };
+function vForm() {
+  const E = {}, today = new Date().toISOString().slice(0, 10), staff = !me || me.role !== 'counsellor';
+  FSPEC.forEach(f => { if (f[3] && !fv(f[0])) E[f[0]] = 'Required.'; }); if (staff && !fv('counsellor_id')) E.counsellor_id = 'Select a counsellor.';
+  if (fv('done_date') > today) E.done_date = 'Cannot be in the future.';
+  if (fv('phone') && !/^\+?\d{10,13}$/.test(fv('phone').replace(/[\s-]/g, ''))) E.phone = 'Enter 10 to 13 digits.';
+  const tot = Number(fv('revenue')), paid = Number(fv('fees_paid'));
+  if (fv('revenue') && !(tot > 0)) E.revenue = 'Must be greater than 0.';
+  if (fv('fees_paid') && !(paid >= 0)) E.fees_paid = 'Cannot be negative.'; else if (fv('fees_paid') && tot > 0 && paid > tot) E.fees_paid = 'Cannot be more than the total course fees.';
+  if (paid > 0) { if (!fv('payment_date')) E.payment_date = 'Required when fees are paid.'; else if (fv('payment_date') > today) E.payment_date = 'Cannot be in the future.'; if (!fv('payment_method')) E.payment_method = 'Required when fees are paid.'; }
+  return E;
+}
+function showErr(E) {
+  FSPEC.concat([['counsellor_id']]).forEach(f => { const k = f[0], el = $('#e_' + k), inp = $('#f_' + k); if (!el) return; const m = (showAll || touched.has(k)) ? E[k] : ''; el.textContent = m || ''; if (inp) inp.classList.toggle('invalid', !!m); });
+}
+function calc() {
+  const tot = Number(fv('revenue')) || 0, paid = Math.max(Number(fv('fees_paid')) || 0, 0), ok = paid <= tot, got = ok ? paid : 0, bal = Math.max(tot - got, 0), st = got <= 0 ? 'Pending' : bal <= 0 ? 'Paid' : 'Partially Paid';
+  $('#calc').innerHTML = `<div><small>Total course fees</small><b>${inr(tot)}</b></div><div><small>Initial payment</small><b>${inr(got)}</b></div><div><small>Outstanding balance</small><b>${inr(bal)}</b></div><div><small>Payment status</small><span class="bdg ${st === 'Paid' ? 'ok' : st === 'Partially Paid' ? 'warn' : 'mute'}">${st}</span></div>`;
+}
 function openForm() {
-  idem = idem || key();
-  const fs = FIELDS.map(([k, l, t, optional]) => {
-    const r = optional ? '' : ' req', a = `id="f_${k}" name="${k}"`;
-    const inp = t === 'select' ? `<select ${a}><option value="">Select</option>${(opts[k] || []).map(o => `<option>${esc(o)}</option>`).join('')}</select>`
-      : t === 'textarea' ? `<textarea ${a} rows="2" maxlength="500"></textarea>` : `<input ${a} type="${t}"${t === 'number' ? ' min="0" step="0.01"' : ''}>`;
-    return `<label class="${t === 'textarea' ? 'full' : ''}"><span class="${r}">${l}</span>${inp}</label>`;
-  });
-  const pub = !me, list = pub ? pubC : counsellors;
-  if (pub || me.role !== 'counsellor') {
-    fs.unshift(`<label class="full"><span class="req">Counsellor</span><select id="f_counsellor_id"><option value="">Select</option>${list.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select></label>`);
-    if (pub) {
-      fs.splice(1, 0, '<label><span>Manager (auto)</span><input id="f_manager_name" readonly></label><label><span>Team Leader (auto)</span><input id="f_tl_name" readonly></label>');
-      fs.push('<input id="f_website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">');
-      if (codeReq) fs.push('<label class="full"><span class="req">Entry code</span><input id="f_code"></label>');
-    }
-  }
-  $('#fields').innerHTML = fs.join(''); $('#ferr').textContent = '';
-  $('#f_done_date').max = new Date().toISOString().slice(0, 10);
+  idem = idem || key(); touched.clear(); showAll = false;
+  const pub = !me, list = pub ? pubC : counsellors, staff = pub || me.role !== 'counsellor', today = new Date().toISOString().slice(0, 10);
+  const fld = f => { const [k, l, t, rq, ok] = f; if (k === 'sec') return `<h4 class="sec">${l}</h4>`; if (k === 'calc') return '<div class="calc full" id="calc" aria-live="polite"></div>';
+    const a = `id="f_${k}" name="${k}"`, hint = k === 'payment_date' || k === 'payment_method' ? ' <small>(if fees paid)</small>' : '';
+    const inp = t === 'select' ? `<select ${a}><option value="">Select</option>${(opts[ok] || []).map(o => `<option>${esc(o)}</option>`).join('')}</select>` : t === 'textarea' ? `<textarea ${a} rows="2" maxlength="500"></textarea>` : `<input ${a} type="${t}"${t === 'number' ? ' min="0" step="0.01" inputmode="decimal"' : ''}>`;
+    return `<label class="${t === 'textarea' ? 'full' : ''}"><span class="${rq ? 'req' : ''}">${l}${hint}</span>${inp}<small class="fe" id="e_${k}"></small></label>`; };
+  const parts = FSPEC.map(fld);
+  if (staff) { parts.splice(1, 0, `<label class="full"><span class="req">Counsellor</span><select id="f_counsellor_id"><option value="">Select</option>${list.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select><small class="fe" id="e_counsellor_id"></small></label>`);
+    if (pub) parts.splice(2, 0, '<label><span>Manager (auto)</span><input id="f_manager_name" readonly></label><label><span>Team Leader (auto)</span><input id="f_tl_name" readonly></label>'); }
+  if (pub) { parts.push('<input id="f_website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">'); if (codeReq) parts.push('<label class="full"><span class="req">Entry code</span><input id="f_code"></label>');
+    parts.push('<p class="sub full" style="grid-column:1/-1">Online submissions are saved with the payment marked unverified until an admin verifies it.</p>'); }
+  $('#fields').innerHTML = parts.join(''); $('#ferr').textContent = ''; $('#f_done_date').max = today; $('#f_payment_date').max = today;
   if (pub) $('#f_counsellor_id').onchange = e => { const c = pubC.find(x => x.id === e.target.value) || {}; $('#f_manager_name').value = c.manager_name || ''; $('#f_tl_name').value = c.tl_name || ''; };
-  if (!$('#dlg').open) $('#dlg').showModal();
+  document.querySelectorAll('#fields [id^=f_]').forEach(el => { const k = el.id.slice(2), on = () => { touched.add(k); if (k === 'fees_paid' && Number(el.value) > 0 && !$('#f_payment_date').value) $('#f_payment_date').value = today; calc(); showErr(vForm()); }; el.addEventListener('input', on); el.addEventListener('change', on); el.addEventListener('blur', () => { touched.add(k); showErr(vForm()); }); });
+  calc(); if (!$('#dlg').open) $('#dlg').showModal();
 }
 $('#cancel').onclick = () => $('#dlg').close();
-$('#clr').onclick = () => { $('#frm').reset(); $('#ferr').textContent = ''; };
+$('#clr').onclick = () => { $('#frm').reset(); touched.clear(); showAll = false; $('#ferr').textContent = ''; calc(); showErr({}); };
 $('#frm').onsubmit = async e => {
-  e.preventDefault();
+  e.preventDefault(); showAll = true; const E = vForm(); showErr(E); const ks = Object.keys(E);
+  if (ks.length) { const el = $('#f_' + ks[0]); if (el) el.focus(); $('#ferr').textContent = 'Please correct the highlighted fields.'; return; }
   const p = { idem_key: idem }; document.querySelectorAll('#fields [id^=f_]').forEach(el => p[el.id.slice(2)] = el.value);
-  const missing = FIELDS.filter(f => !f[3] && !p[f[0]]).map(f => f[1]);
-  if ((!me || me.role !== 'counsellor') && !p.counsellor_id) missing.unshift('Counsellor');
-  if (missing.length) { $('#ferr').textContent = 'Required: ' + missing.join(', '); return; }
   const b = $('#sub'); b.disabled = true; b.textContent = 'Saving…'; $('#ferr').textContent = '';
   try {
     const r = await api(me ? 'submit' : 'public_submit', p);
-    idem = null; $('#dlg').close(); toast(r.duplicate ? 'Already submitted. Reference ' + r.record_id : 'Admission submitted successfully. Reference ' + r.record_id); if (me) load();
-  } catch (err) { $('#ferr').textContent = err.message; }   // idem key kept so a retry cannot double-save
+    idem = null; $('#dlg').close();
+    toast(r.duplicate ? 'Already submitted. Reference ' + r.record_id : 'Admission submitted successfully. Reference ' + r.record_id + (r.payment_status === 'Pending' && Number(p.fees_paid) > 0 ? ' · payment awaiting verification' : '')); if (me) load();
+  } catch (err) { $('#ferr').textContent = err.message; }   // inputs and the request key are kept, so a retry cannot double-save
   finally { b.disabled = false; b.textContent = 'Save admission'; }
 };
 
@@ -394,31 +441,40 @@ $('#pubbtn').onclick = async () => {
   }
 };
 let payRid = '', payKey = null;
-async function openPay(id) {
+async function openPay(id, keepInput) {
   payRid = id; payKey = payKey || key();
   try {
-    const d = await api('payments', { record_id: id });
-    $('#pytitle').textContent = d.record.app_no + ' · ' + d.record.candidate;
-    $('#pysum').textContent = 'Admission value ' + inr(d.value) + ' · Received ' + inr(d.received) + ' · Outstanding ' + inr(d.balance);
-    $('#pyrows').innerHTML = d.payments.length ? d.payments.map(x => `<tr><td>${esc(x.received_date)}</td><td>${x.kind === 'refund' ? 'Refund' : 'Payment'}</td><td class="n">${inr(x.amount)}</td><td>${esc(x.method)}</td><td>${esc(x.reference)}</td><td>${esc(x.status)}</td><td>${d.canReverse && x.status !== 'Reversed' ? `<button class="btn alt" data-r="${esc(x.payment_id)}">Reverse</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="7" class="empty">No payments recorded yet.</td></tr>';
-    $('#pyform').classList.toggle('hide', !d.canAdd); $('#pyerr').textContent = '';
-    $('#py_date').value = $('#py_date').max = new Date().toISOString().slice(0, 10);
-    document.querySelectorAll('[data-r]').forEach(b => b.onclick = async () => {
-      const reason = prompt('Reason for reversal?'); if (!reason) return;
-      try { await api('set_payment_status', { payment_id: b.dataset.r, status: 'Reversed', reason }); toast('Payment reversed'); openPay(payRid); load(); } catch (e) { toast(e.message); }
-    });
+    const d = await api('payments', { record_id: id }), bd2 = d.pay_status === 'Paid' ? 'ok' : d.pay_status === 'Partially Paid' ? 'warn' : 'mute';
+    $('#pytitle').textContent = 'Payments · ' + d.record.app_no; $('#pysub').textContent = d.record.candidate + (d.record.counsellor ? ' · Counsellor ' + d.record.counsellor : '');
+    $('#pysum').innerHTML = `<div><small>Total course fees</small><b>${inr(d.value)}</b></div><div><small>Total received</small><b>${inr(d.received)}</b></div><div><small>Outstanding</small><b style="color:${d.balance > 0 ? 'var(--warn)' : 'var(--ok)'}">${inr(d.balance)}</b></div>
+      <div><small>Payment status</small><span class="bdg ${bd2}">${d.pay_status}</span>${d.overdue ? ' <span class="bdg bad">Overdue</span>' : ''}</div><div><small>Next due date</small><b style="font-size:15px">${esc(d.next_due) || '—'}</b></div>`
+      + (d.needs_reconciliation ? '<div style="grid-column:1/-1"><span class="bdg info">Needs reconciliation</span> <small style="display:inline;text-transform:none">Old data marks this paid but no payment history exists. Add the real transactions below.</small></div>' : '');
+    $('#pyrows').innerHTML = d.payments.length ? d.payments.map(x => `<tr><td>${esc(x.received_date)}</td><td>${x.kind === 'refund' ? 'Refund' : 'Payment'}</td><td class="n">${inr(x.amount)}</td><td>${esc(x.method)}</td><td>${esc(x.reference)}</td>
+      <td><span class="bdg ${x.status === 'Received' ? 'ok' : x.status === 'Pending' ? 'warn' : 'mute'}">${x.status === 'Pending' ? 'Pending verification' : x.status}</span></td><td>${esc(x.by)}</td>
+      <td>${d.canReverse && x.status === 'Pending' ? `<button class="btn alt sm" data-v="${esc(x.payment_id)}">Verify</button> ` : ''}${d.canCorrect && x.status !== 'Reversed' ? `<button class="btn alt sm" data-c="${esc(x.payment_id)}" data-a="${x.amount}" data-d="${esc(x.received_date)}">Correct</button> ` : ''}${d.canReverse && x.status !== 'Reversed' ? `<button class="btn alt sm" data-r="${esc(x.payment_id)}">Reverse</button>` : ''}</td></tr>`).join('') : '<tr><td colspan="8" class="empty">No payments recorded yet.</td></tr>';
+    $('#py_method').innerHTML = '<option value="">Select</option>' + d.methods.map(m => `<option>${esc(m)}</option>`).join('');
+    $('#pyform').classList.toggle('hide', !d.canAdd); $('#py_kw').classList.toggle('hide', !d.canReverse); $('#py_sw').classList.toggle('hide', !d.canReverse);
+    const t = new Date().toISOString().slice(0, 10); if (!keepInput) { $('#py_date').value = t; $('#pyerr').textContent = ''; } $('#py_date').max = t;
+    const act = async (call, ok) => { try { await call(); toast(ok); openPay(payRid, true); load(); } catch (e) { toast(e.message); } };
+    document.querySelectorAll('[data-v]').forEach(b => { if (b.closest('#pyrows')) b.onclick = () => act(() => api('set_payment_status', { payment_id: b.dataset.v, status: 'Received', reason: 'Verified' }), 'Payment verified'); });
+    document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { const reason = prompt('Reason for reversal?'); if (reason) act(() => api('set_payment_status', { payment_id: b.dataset.r, status: 'Reversed', reason }), 'Payment reversed'); });
+    document.querySelectorAll('[data-c]').forEach(b => b.onclick = () => { const amt = prompt('Corrected amount (₹)', b.dataset.a); if (amt === null) return; const dt = prompt('Corrected payment date (YYYY-MM-DD)', b.dataset.d); if (dt === null) return; const reason = prompt('Reason for correction (required)'); if (!reason) return;
+      act(() => api('correct_payment', { payment_id: b.dataset.c, amount: amt, received_date: dt, reason }), 'Payment corrected'); });
     if (!$('#pydlg').open) $('#pydlg').showModal();
   } catch (e) { toast(e.message); }
 }
 $('#pyclose').onclick = () => $('#pydlg').close();
 $('#pyform').onsubmit = async e => {
-  e.preventDefault(); const b = $('#pysub'); b.disabled = true; $('#pyerr').textContent = '';
-  if (!$('#py_amount').value || !$('#py_date').value) { $('#pyerr').textContent = 'Amount and received date are required.'; b.disabled = false; return; }
+  e.preventDefault(); const b = $('#pysub2'); $('#pyerr').textContent = '';
+  if (!(Number($('#py_amount').value) > 0)) { $('#pyerr').textContent = 'Enter an amount greater than 0.'; return; }
+  if (!$('#py_date').value) { $('#pyerr').textContent = 'Enter the actual payment date.'; return; }
+  if (!$('#py_method').value) { $('#pyerr').textContent = 'Choose a payment method.'; return; }
+  b.disabled = true;
   try {
     await api('add_payment', { record_id: payRid, idem_key: payKey, amount: $('#py_amount').value, received_date: $('#py_date').value, kind: $('#py_kind').value, status: $('#py_status').value,
       method: $('#py_method').value, reference: $('#py_ref').value, next_date: $('#py_next').value, remarks: $('#py_rem').value });
     toast('Payment recorded'); payKey = null; $('#pyform').reset(); openPay(payRid); load();
-  } catch (err) { $('#pyerr').textContent = err.message; }   // key kept so a retry cannot double-record
+  } catch (err) { $('#pyerr').textContent = err.message; }   // input and request key are kept for a safe retry
   finally { b.disabled = false; }
 };
 
